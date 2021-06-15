@@ -1,16 +1,18 @@
-import requests
-import pyodbc
-import assets
+from asset import Asset
+from user import User
+from sqlalchemy.sql.sqltypes import DateTime
 import config
-import users
-import configparser
 
-
-# Run sync for both users and assets
-
-print("hi")
-assets.pull_assets(config.DATABASE, config.IIQ_INSTANCE, config.IIQ_TOKEN)
 
 
 if __name__ == '__main__':
-    print("I am the runner")
+    
+    print('Creating IIQ Tables...')
+    # Generate database schema from SqlAlchemy
+    Base.metadata.create_all(engine)
+
+    print('Complete\nInitializing a database session...')
+    # Create a session
+    session = Session()
+
+    
