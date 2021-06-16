@@ -9,12 +9,12 @@ from types import SimpleNamespace as Namespace
 
 class User(Base):
     __tablename__ = 'Users'
-    __table_args__ = {'schema': 'IQtesting'}
+    __table_args__ = {'schema': 'IQ'}
 
-    #TODO: using UUID at all, especially as it's correct type and PK presents an interesting
+    #TODO: using UNIQUEIDENTIFER at all, especially as it's correct type and PK presents an interesting
     # challenge, SqlAlchemy doesn't support a database agnostic way of dealing with this
     # will have to create a case for other databases down the road and eventually test it
-    # Dockerize some databases perhaps, for now this is the MsSql way of dealing with it
+    # Dockerize some databases perhaps to test, for now this is the MsSql way of dealing with it
     UserId = Column(UNIQUEIDENTIFIER, primary_key=True)
     IsDeleted = Column(Boolean)
     SiteId = Column(UNIQUEIDENTIFIER)
@@ -30,7 +30,7 @@ class User(Base):
     Email = Column(String)
     Username = Column(String)
     Phone = Column(String)
-    SchoolIdNumber = Column(Integer)
+    SchoolIdNumber = Column(String)
     Grade = Column(String)
     Homeroom = Column(String)
     ExternalId = Column(UNIQUEIDENTIFIER)
@@ -45,43 +45,41 @@ class User(Base):
     IsOutOfOffice = Column(Boolean)
     Portal = Column(Integer)
 
-    def __init__(self, UserId, IsDeleted, SiteId, CreatedDate, ModifiedDate, LocationId,
-    LocationName, IsActive, IsOnline, IsOnlineLastUpdated, FirstName, LastName,
-    Email, Username, Phone, SchoolIdNumber, Grade, Homeroom, ExternalId, InternalComments,
-    RoleId, AuthenticatedBy, AccountSetupProgress, TrainingPercentComplete, IsEmailVerified,
-    IsWelcomeEmailSent, PreventProviderUpdates, IsOutOfOffice, Portal):
-        self.UserId = UserId
-        self.IsDeleted = IsDeleted
-        self.SiteId = SiteId
-        self.CreatedDate = CreatedDate
-        self.ModifiedDate = ModifiedDate
-        self.LocationId = LocationId
-        self.LocationName = LocationName
-        self.IsActive = IsActive
-        self.IsOnline = IsOnline
-        self.IsOnlineLastUpdated = IsOnlineLastUpdated
-        self.FirstName = FirstName
-        self.LastName = LastName
-        self.Email = Email
-        self.Username = Username
-        self.Phone = Phone
-        self.SchoolIdNumber = SchoolIdNumber
-        self.Grade = Grade
-        self.Homeroom = Homeroom
-        self.ExternalId = ExternalId
-        self.InternalComments = InternalComments
-        self.RoleId = RoleId
-        self.AuthenticatedBy = AuthenticatedBy
-        self.AccountSetupProgress = AccountSetupProgress
-        self.TrainingPercentComplete = TrainingPercentComplete
-        self.IsEmailVerified = IsEmailVerified
-        self.IsWelcomeEmailSent = IsWelcomeEmailSent
-        self.PreventProviderUpdates = PreventProviderUpdates
-        self.IsOutOfOffice = IsOutOfOffice
-        self.Portal = Portal
+    def __init__(self, data):
+        # Extract fields from the raw data
+        self.UserId = data.UserId
+        self.IsDeleted = data.IsDeleted
+        self.SiteId = data.SiteId
+        self.CreatedDate = data.CreatedDate
+        self.ModifiedDate = data.ModifiedDate
+        self.LocationId = data.LocationId
+        self.LocationName = data.LocationName
+        self.IsActive = data.IsActive
+        self.IsOnline = data.IsOnline
+        self.IsOnlineLastUpdated = data.IsOnlineLastUpdated
+        self.FirstName = data.FirstName
+        self.LastName = data.LastName
+        self.Email = data.Email
+        self.Username = data.Username
+        self.Phone = data.Phone
+        self.SchoolIdNumber = data.SchoolIdNumber
+        self.Grade = data.Grade
+        self.Homeroom = data.Homeroom
+        self.ExternalId = data.ExternalId
+        self.InternalComments = data.InternalComments
+        self.RoleId = data.RoleId
+        self.AuthenticatedBy = data.AuthenticatedBy
+        self.AccountSetupProgress = data.AccountSetupProgress
+        self.TrainingPercentComplete = data.TrainingPercentComplete
+        self.IsEmailVerified = data.IsEmailVerified
+        self.IsWelcomeEmailSent = data.IsWelcomeEmailSent
+        self.PreventProviderUpdates = data.PreventProviderUpdates
+        self.IsOutOfOffice = data.IsOutOfOffice
+        self.Portal = data.Portal
 
-def get_users_request(page):
-    url = "http://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$d=Ascending&$s=" + str(config.PAGE_SIZE) + "$p=" + str(page)
+def __get_users_request(page):
+    url = "http://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$s=" + str(config.PAGE_SIZE) + "&$d=Ascending&$p=" + str(page)
+    print(url)
     payload={}
     files={}
     headers = {
@@ -105,11 +103,20 @@ def get_users_page(page):
 
     users = []
 
-    response = get_users_request(page)
+    response = __get_users_request(page)
+
+    # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
+    # in the form user.Name user.LocationId etc etc.
+    response_users = response.json(object_hook = lambda d : Namespace(**d)).Items 
 
     # Create an instance of User for each returned user and append it to the list
-    for user in response.json(object_hook = lambda d : Namespace(**d))['Items']:
-        new_user = User()
+    for u in response_users:
+        # Create the user
+        new_user = User(u)
+        # Append the user
+        users.append(new_user)
+
+    return users
 
 
     
