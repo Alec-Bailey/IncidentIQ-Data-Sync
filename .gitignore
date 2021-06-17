@@ -1,2 +1,4 @@
 .vscode/settings.json
 .vscode
+config.ini
+__pycache__
