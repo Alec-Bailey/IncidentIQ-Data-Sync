@@ -2,3 +2,4 @@
 .vscode
 config.ini
 __pycache__
+out.txt
