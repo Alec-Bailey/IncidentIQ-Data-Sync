@@ -4,20 +4,10 @@ from sqlalchemy.sql.sqltypes import DateTime
 from asset import Asset
 from base import Session, engine, Base
 
-import user
+import configparser
 
-# Generate database schema from SqlAlchemy
-Base.metadata.create_all(engine)
-
-# Create a session
-session = Session()
-
-# Create Assets for testing
-users = user.get_users_page(0)
-
-for u in users:
-    session.add(u)
-
-
-session.commit()
-session.close()
+config = configparser.ConfigParser()
+config.read('config.ini')
+print(config.sections())
+print(config.options('Database'))
+print(config.get('Database', 'database'))
