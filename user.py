@@ -1,6 +1,6 @@
 # User class respresents IncidentIQ users
 from sqlalchemy import Column, String, Integer, Date, Boolean
-from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
+from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
 from base import Base
 import config
 import requests
@@ -17,10 +17,10 @@ class User(Base):
     # Dockerize some databases perhaps to test, for now this is the MsSql way of dealing with it
     UserId = Column(UNIQUEIDENTIFIER, primary_key=True)
     IsDeleted = Column(Boolean)
-    SiteId = Column(UNIQUEIDENTIFIER)
+    SiteId = Column(String) # UUID TODO: figure out which UUID was causing issues & resolve
     CreatedDate = Column(Date)
     ModifiedDate = Column(Date)
-    LocationId = Column(UNIQUEIDENTIFIER)
+    LocationId = Column(String) # UUID
     LocationName = Column(String)
     IsActive = Column(Boolean)
     IsOnline = Column(Boolean)
@@ -33,9 +33,9 @@ class User(Base):
     SchoolIdNumber = Column(String)
     Grade = Column(String)
     Homeroom = Column(String)
-    ExternalId = Column(UNIQUEIDENTIFIER)
+    ExternalId = Column(String) # UUID
     InternalComments = Column(String)
-    RoleId = Column(UNIQUEIDENTIFIER)
+    RoleId = Column(String) #UUID
     AuthenticatedBy = Column(String)
     AccountSetupProgress = Column(Integer)
     TrainingPercentComplete = Column(Integer)
@@ -96,7 +96,7 @@ def __get_users_request(page):
 
 # Retrieve the number of pages to iterate through
 def get_num_pages():
-    return get_users_request(0).json()['Paging']['PageCount']
+    return __get_users_request(0).json()['Paging']['PageCount']
 
 # Retreives all users from a request page and returns a list of all as User objects
 def get_users_page(page):
@@ -106,7 +106,7 @@ def get_users_page(page):
     response = __get_users_request(page)
 
     # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
-    # in the form user.Name user.LocationId etc etc.
+    # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
     response_users = response.json(object_hook = lambda d : Namespace(**d)).Items 
 
     # Create an instance of User for each returned user and append it to the list
