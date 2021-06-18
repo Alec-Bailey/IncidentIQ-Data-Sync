@@ -1,6 +1,7 @@
 # User class respresents IncidentIQ users
 from sqlalchemy import Column, String, Integer, Date, Boolean
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
+from sqlalchemy.orm import validates
 from base import Base
 import config
 import requests
@@ -9,7 +10,7 @@ from types import SimpleNamespace as Namespace
 
 class User(Base):
     __tablename__ = 'Users'
-    __table_args__ = {'schema': 'IQ'}
+    __table_args__ = {'schema': config.SCHEMA}
 
     #TODO: using UNIQUEIDENTIFER at all, especially as it's correct type and PK presents an interesting
     # challenge, SqlAlchemy doesn't support a database agnostic way of dealing with this
@@ -17,10 +18,10 @@ class User(Base):
     # Dockerize some databases perhaps to test, for now this is the MsSql way of dealing with it
     UserId = Column(UNIQUEIDENTIFIER, primary_key=True)
     IsDeleted = Column(Boolean)
-    SiteId = Column(String) # UUID TODO: figure out which UUID was causing issues & resolve
+    SiteId = Column(UNIQUEIDENTIFIER)
     CreatedDate = Column(Date)
     ModifiedDate = Column(Date)
-    LocationId = Column(String) # UUID
+    LocationId = Column(UNIQUEIDENTIFIER)
     LocationName = Column(String)
     IsActive = Column(Boolean)
     IsOnline = Column(Boolean)
@@ -33,9 +34,9 @@ class User(Base):
     SchoolIdNumber = Column(String)
     Grade = Column(String)
     Homeroom = Column(String)
-    ExternalId = Column(String) # UUID
+    ExternalId = Column(UNIQUEIDENTIFIER)
     InternalComments = Column(String)
-    RoleId = Column(String) #UUID
+    RoleId = Column(String)
     AuthenticatedBy = Column(String)
     AccountSetupProgress = Column(Integer)
     TrainingPercentComplete = Column(Integer)
@@ -44,6 +45,19 @@ class User(Base):
     PreventProviderUpdates = Column(Boolean)
     IsOutOfOffice = Column(Boolean)
     Portal = Column(Integer)
+
+    # Validator ensures empty strings are entered as null
+    @validates('UserId','IsDeleted','SiteId','CreatedDate','ModifiedDate',
+    'LocationId','LocationName','IsActive','IsOnline','IsOnlineLastUpdated',
+    'FirstName','LastName','Email','Username','Phone','SchoolIdNumber','Grade',
+    'Homeroom','ExternalId','InternalComments','RoleId','AuthenticatedBy',
+    'AccountSetupProgress','TrainingPercentComplete','IsEmailVerified',
+    'IsWelcomeEmailSent','PreventProviderUpdates','IsOutOfOffice','Portal')
+    def empty_string_to_null(self, key, value):
+        if isinstance(value, str) and value == '':
+            return None
+        else:
+            return value
 
     def __init__(self, data):
         # Extract fields from the raw data
@@ -107,7 +121,7 @@ def get_users_page(page):
 
     # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
     # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
-    response_users = response.json(object_hook = lambda d : Namespace(**d)).Items 
+    response_users = response.json(object_hook = lambda d : Namespace(**d)).Items
 
     # Create an instance of User for each returned user and append it to the list
     for u in response_users:
