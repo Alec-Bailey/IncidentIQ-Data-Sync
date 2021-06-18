@@ -6,6 +6,7 @@ cf.read('config.ini')
 # Local Database for backup
 DATABASE = cf.get('Database', 'Database')
 DB_CONNECTION_STRING = cf.get('Database', 'ConnectionString')
+SCHEMA = cf.get('Database', 'Schema')
 # Incident IQ Credentials
 IIQ_INSTANCE = cf.get('IncidentIQ', 'Instance')
 IIQ_TOKEN = cf.get('IncidentIQ', 'Token')
