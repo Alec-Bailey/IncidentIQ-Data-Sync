@@ -29,7 +29,6 @@ __status__ = "Development"
 # request to the IncidentIQ API. Inserts the returned elements into the
 # appropriate database table, and commits the changes.
 def __sync_object(cls : IIQ_Datatype, index):
-
     session = Session()
 
     # Retrieve an entire API Page worth of objects
@@ -41,9 +40,8 @@ def __sync_object(cls : IIQ_Datatype, index):
     session.commit() #TODO: this is causing a reace condition on commit?? changed to threadsafe version?
     session.close()
 
+
 def __execute_sync(IIQ_Type : IIQ_Datatype):
-
-
     # Pull all users down into database
     num_pages = IIQ_Type.get_num_pages()
     # Create a thread pool with config.THREADS number of threads. This calls __sync_object
@@ -56,7 +54,6 @@ def __execute_sync(IIQ_Type : IIQ_Datatype):
         thread = {executor.submit(__sync_object, IIQ_Type, index): index for index in range(0, num_pages)}
 
     
-
 if __name__ == '__main__':
     start_time = time.time() #TODO: remove
     # Generate database schema from SqlAlchemy
