@@ -11,9 +11,11 @@ API is inserted into the configured database via SqlAlchemy ORM mappings.
 from configparser import ConfigParser
 import time
 import concurrent.futures
+from concurrent.futures import Future
+from threading import Lock
 from sqlalchemy.sql.sqltypes import DateTime
-from base import Session, engine, Base
-import user
+from base import Session, engine, Base, IIQ_Datatype
+from user import User
 import config
 
 __author__ = "Alec Bailey"
@@ -26,25 +28,24 @@ __status__ = "Development"
 # One unit of work, executed by a thread. Creates a session preforms a web
 # request to the IncidentIQ API. Inserts the returned elements into the
 # appropriate database table, and commits the changes.
-def __sync_object(index): #TODO: pass object to make object independent
+def __sync_object(cls : IIQ_Datatype, index):
+
     session = Session()
 
-    page = user.get_users_page(index)
-    for u in page:
-        session.add(u)
-    session.commit()
+    # Retrieve an entire API Page worth of objects
+    page = cls.get_page(index)
+
+    # Add each object to the session and commit it
+    session.add_all(page)
+
+    session.commit() #TODO: this is causing a reace condition on commit?? changed to threadsafe version?
     session.close()
 
-if __name__ == '__main__':
-    start_time = time.time() #TODO: remove
-    # Generate database schema from SqlAlchemy
-    Base.metadata.create_all(engine)
-    # Create a session
-    session = Session()
+def __execute_sync(IIQ_Type : IIQ_Datatype):
+
 
     # Pull all users down into database
-    num_pages = user.get_num_pages()
-
+    num_pages = IIQ_Type.get_num_pages()
     # Create a thread pool with config.THREADS number of threads. This calls __sync_object
     # for each page of the API we wish to request, from page 0 to num_pages. Each thread
     # is responsible for adding exactly one page of the API response (by default 1000 objects) 
@@ -52,7 +53,17 @@ if __name__ == '__main__':
     # for another thread to fetch and operate on the next page if config.THREADS is less than 
     # num_pages.
     with concurrent.futures.ThreadPoolExecutor(max_workers = int(config.THREADS)) as executor:
-        thread = {executor.submit(__sync_object, index): index for index in range(0, num_pages)}
+        thread = {executor.submit(__sync_object, IIQ_Type, index): index for index in range(0, num_pages)}
+
+    
+
+if __name__ == '__main__':
+    start_time = time.time() #TODO: remove
+    # Generate database schema from SqlAlchemy
+    Base.metadata.create_all(engine)
+
+    # Execute the Users sync
+    __execute_sync(User)
 
     stop_time = time.time() #TODO: remove
 
