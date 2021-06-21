@@ -2,13 +2,12 @@
 from sqlalchemy import Column, String, Integer, Date, Boolean
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
 from sqlalchemy.orm import validates
-from base import Base
+from base import Base, IIQ_Datatype
 import config
 import requests
-import json
 from types import SimpleNamespace as Namespace
 
-class User(Base):
+class User(Base, IIQ_Datatype):
     __tablename__ = 'Users'
     __table_args__ = {'schema': config.SCHEMA}
 
@@ -91,46 +90,49 @@ class User(Base):
         self.IsOutOfOffice = data.IsOutOfOffice
         self.Portal = data.Portal
 
-def __get_users_request(page):
-    url = "http://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$s=" + str(config.PAGE_SIZE) + "&$d=Ascending&$p=" + str(page)
-    print(url)
-    payload={}
-    files={}
-    headers = {
-    'Client': 'WebBrowser',
-    'Accept': 'application/json, text/plain, */*',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-    'Pragma': 'no-cache',
-    'Accept-Encoding': 'gzip, deflate',
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + config.IIQ_TOKEN
-    }
-    # Return response as JSON
-    return requests.request("POST", url, headers=headers, data=payload, files=files)
+    @staticmethod
+    def __get_users_request(page):
+        url = "http://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$s=" + str(config.PAGE_SIZE) + "&$d=Ascending&$p=" + str(page)
+        print(url)
+        payload={}
+        files={}
+        headers = {
+        'Client': 'WebBrowser',
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+        'Pragma': 'no-cache',
+        'Accept-Encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + config.IIQ_TOKEN
+        }
+        # Return response as JSON
+        return requests.request("POST", url, headers=headers, data=payload, files=files)
 
-# Retrieve the number of pages to iterate through
-def get_num_pages():
-    return __get_users_request(0).json()['Paging']['PageCount']
+    # Retrieve the number of pages to iterate through
+    @staticmethod
+    def get_num_pages():
+        return User.__get_users_request(0).json()['Paging']['PageCount']
 
-# Retreives all users from a request page and returns a list of all as User objects
-def get_users_page(page):
+    # Retreives all users from a request page and returns a list of all as User objects
+    @staticmethod
+    def get_page(page):
 
-    users = []
+        users = []
 
-    response = __get_users_request(page)
+        response = User.__get_users_request(page)
 
-    # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
-    # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
-    response_users = response.json(object_hook = lambda d : Namespace(**d)).Items
+        # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
+        # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
+        response_users = response.json(object_hook = lambda d : Namespace(**d)).Items
 
-    # Create an instance of User for each returned user and append it to the list
-    for u in response_users:
-        # Create the user
-        new_user = User(u)
-        # Append the user
-        users.append(new_user)
+        # Create an instance of User for each returned user and append it to the list
+        for u in response_users:
+            # Create the user
+            new_user = User(u)
+            # Append the user
+            users.append(new_user)
 
-    return users
+        return users
 
 
     
