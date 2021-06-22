@@ -25,7 +25,7 @@ __maintainer__ = "Alec Bailey"
 __email__ = "alecj.bailey@gmail.com"
 __status__ = "Development"
 
-# One unit of work, executed by a thread. Creates a session preforms a web
+# One unit of work, executed by a thread. Creates a session and preforms a web
 # request to the IncidentIQ API. Inserts the returned elements into the
 # appropriate database table, and commits the changes.
 def __sync_object(cls : IIQ_Datatype, index):
