@@ -1,4 +1,5 @@
 # User class respresents IncidentIQ users
+from requests.models import HTTPError
 from sqlalchemy import Column, String, Integer, Date, Boolean
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
 from sqlalchemy.orm import validates
@@ -91,7 +92,7 @@ class User(Base, IIQ_Datatype):
         self.Portal = data.Portal
 
     @staticmethod
-    def __get_users_request(page):
+    def get_data_request(page):
         url = "http://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$s=" + str(config.PAGE_SIZE) + "&$d=Ascending&$p=" + str(page)
         print(url)
         payload={}
@@ -105,36 +106,27 @@ class User(Base, IIQ_Datatype):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
-        # Return response as JSON
-        return requests.request("POST", url, headers=headers, data=payload, files=files)
+        
+        response =  requests.request("POST", url, headers=headers, data=payload, files=files)
+
+        # Cause an exception if anything but success is returned
+        if response.status_code != 200:
+            raise HTTPError("""A request returned a status code other than 200\n
+            Status Code: """ + str(response.status_code))
+
+        # Cause an exception if for some reason the API returns nothing
+        if response.json()['Paging']['PageSize'] <= 0:
+            raise HTTPError("No elements were returned from a request")
+
+        # Return the response
+        return response
 
     # Retrieve the number of pages to iterate through
     @staticmethod
     def get_num_pages():
-        return User.__get_users_request(0).json()['Paging']['PageCount']
+        return User.get_data_request(0).json()['Paging']['PageCount']
 
     # Retreives all users from a request page and returns a list of all as User objects
-    @staticmethod
-    def get_page(page):
-
-        users = []
-
-        response = User.__get_users_request(page)
-
-        # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
-        # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
-        response_users = response.json(object_hook = lambda d : Namespace(**d)).Items
-
-        # Create an instance of User for each returned user and append it to the list
-        for u in response_users:
-            # Create the user
-            new_user = User(u)
-            # Append the user
-            users.append(new_user)
-
-        return users
-
-
-    
-
-
+    @classmethod
+    def get_page(cls, page_number):
+        return super().get_page(page_number)
