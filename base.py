@@ -31,6 +31,28 @@ class IIQ_Datatype:
     def get_num_pages():
         raise NotImplementedError("get_num_pages not impelmeneted")
 
+    # Checks if the API response contains an element at the specified path,
+    # taking an unlimited number of arguments, each successive argument
+    # corrosponding to a successive level of nesting in the returned JSON
+    # Eg. _lookup_api_contents(data, 'Address', 'Street1') If 
+    # data.Address.Street1 does exist, return the value, otherwise
+    # return None._lookup_api_contents
+    @staticmethod
+    def find_element(lookup_object : Namespace, *args):
+        # Verify that the attribute exists at every level, moving
+        # into the object as we find exising attributes
+        for i in range (0, len(args) -1):
+            if hasattr(lookup_object, args[i]):
+                lookup_object = getattr(lookup_object, args[i])
+            else:
+                return None
+
+        # If the outer most attributes exist, return the value
+        if hasattr(lookup_object, args[len(args)-1]):
+            return getattr(lookup_object, args[len(args)-1])
+        # Return None if the attribute does not exist
+        return None
+
     # Retrieves a page of elements from the API, and creates an appropriate
     # object of each type for all elements. Returns a list of these objects
     @classmethod
@@ -44,7 +66,7 @@ class IIQ_Datatype:
         # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
         # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
         response_types = response.json(object_hook = lambda d : Namespace(**d)).Items
-
+    
         # Iterate over every returned elmeent in the response and instantiate
         # an instance of each respective class. Add that to a list so we can
         # later add this to a session & commit it to the database via 
