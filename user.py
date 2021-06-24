@@ -3,14 +3,18 @@ from requests.models import HTTPError
 from sqlalchemy import Column, String, Integer, Date, Boolean
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
 from sqlalchemy.orm import validates
-from base import Base, IIQ_Datatype
+from base import Base, IIQ_Datatype as IIQ
+from custom_fields import UserCustomFields
 import config
 import requests
 from types import SimpleNamespace as Namespace
 
-class User(Base, IIQ_Datatype):
+class User(Base, IIQ):
     __tablename__ = 'Users'
     __table_args__ = {'schema': config.SCHEMA}
+
+    # Retreive custom fields
+    custom_fields = UserCustomFields.parse_fields()
 
     #TODO: using UNIQUEIDENTIFER at all, especially as it's correct type and PK presents an interesting
     # challenge, SqlAlchemy doesn't support a database agnostic way of dealing with this
@@ -46,13 +50,15 @@ class User(Base, IIQ_Datatype):
     IsOutOfOffice = Column(Boolean)
     Portal = Column(Integer)
 
-    # Validator ensures empty strings are entered as null
-    @validates('UserId','IsDeleted','SiteId','CreatedDate','ModifiedDate',
+    fields = ['UserId','IsDeleted','SiteId','CreatedDate','ModifiedDate',
     'LocationId','LocationName','IsActive','IsOnline','IsOnlineLastUpdated',
     'FirstName','LastName','Email','Username','Phone','SchoolIdNumber','Grade',
     'Homeroom','ExternalId','InternalComments','RoleId','AuthenticatedBy',
     'AccountSetupProgress','TrainingPercentComplete','IsEmailVerified',
-    'IsWelcomeEmailSent','PreventProviderUpdates','IsOutOfOffice','Portal')
+    'IsWelcomeEmailSent','PreventProviderUpdates','IsOutOfOffice','Portal']
+
+    # Validator ensures empty strings are entered as null
+    @validates(fields.__hash__)
     def empty_string_to_null(self, key, value):
         if isinstance(value, str) and value == '':
             return None
@@ -60,35 +66,36 @@ class User(Base, IIQ_Datatype):
             return value
 
     def __init__(self, data):
-        # Extract fields from the raw data
+        # Extract fields from the raw data, optional fields are retrieved
+        # safely via find_element
         self.UserId = data.UserId
-        self.IsDeleted = data.IsDeleted
+        self.IsDeleted = IIQ.find_element(data, 'IsDeleted')
         self.SiteId = data.SiteId
         self.CreatedDate = data.CreatedDate
         self.ModifiedDate = data.ModifiedDate
         self.LocationId = data.LocationId
-        self.LocationName = data.LocationName
+        self.LocationName = IIQ.find_element(data, 'LocationName')
         self.IsActive = data.IsActive
-        self.IsOnline = data.IsOnline
-        self.IsOnlineLastUpdated = data.IsOnlineLastUpdated
-        self.FirstName = data.FirstName
-        self.LastName = data.LastName
-        self.Email = data.Email
-        self.Username = data.Username
-        self.Phone = data.Phone
-        self.SchoolIdNumber = data.SchoolIdNumber
-        self.Grade = data.Grade
-        self.Homeroom = data.Homeroom
-        self.ExternalId = data.ExternalId
-        self.InternalComments = data.InternalComments
+        self.IsOnline = IIQ.find_element(data, 'IsOnline')
+        self.IsOnlineLastUpdated = IIQ.find_element(data, 'IsOnlineLastUpdated')
+        self.FirstName = IIQ.find_element(data, 'FirstName')
+        self.LastName = IIQ.find_element(data, 'LastName')
+        self.Email = IIQ.find_element(data, 'Email')
+        self.Username = IIQ.find_element(data, 'Username')
+        self.Phone = IIQ.find_element(data, 'Phone')
+        self.SchoolIdNumber = IIQ.find_element(data, 'SchoolIdNumber')
+        self.Grade = IIQ.find_element(data, 'Grade')
+        self.Homeroom = IIQ.find_element(data, 'Homeroom')
+        self.ExternalId = IIQ.find_element(data, 'ExternalId')
+        self.InternalComments = IIQ.find_element(data, 'InternalComments')
         self.RoleId = data.RoleId
-        self.AuthenticatedBy = data.AuthenticatedBy
+        self.AuthenticatedBy = IIQ.find_element(data, 'AuthenticatedBy')
         self.AccountSetupProgress = data.AccountSetupProgress
         self.TrainingPercentComplete = data.TrainingPercentComplete
         self.IsEmailVerified = data.IsEmailVerified
-        self.IsWelcomeEmailSent = data.IsWelcomeEmailSent
+        self.IsWelcomeEmailSent = IIQ.find_element(data, 'IsWelcomeEmailSent')
         self.PreventProviderUpdates = data.PreventProviderUpdates
-        self.IsOutOfOffice = data.IsOutOfOffice
+        self.IsOutOfOffice = IIQ.find_element(data, 'IsOutOfOffice')
         self.Portal = data.Portal
 
     @staticmethod
