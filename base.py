@@ -16,6 +16,15 @@ Base = declarative_base()
 
 class IIQ_Datatype:
 
+    def __check_custom_fields(cls, item):
+        if hasattr(cls, 'custom_fields'):
+                new_custom = IIQ_CustomFields()
+                for key in cls.custom_fields:
+                    #TODO: have to do some find_element here
+                    IIQ_Datatype.find_element(item, 'CustomFieldValues')
+                    #setattr(new_custom, cls.custom_fields[key], IIQ_Datatype.find_element(item, 'CustomField'))#TODO value)
+        
+
     # Validator ensures empty strings are entered as null
     def empty_string_to_null(self, key, value):
         if isinstance(value, str) and value == '':
@@ -71,10 +80,18 @@ class IIQ_Datatype:
         # an instance of each respective class. Add that to a list so we can
         # later add this to a session & commit it to the database via 
         # SqlAlchemy
-        for element in response_types:
+        for item in response_types:
             # Instantiation of the specified class cls
             # EG User(element) or Location(element)
-            new_iiq_class = cls(element)
+            new_iiq_class = cls(item)
             iiq_classes.append(new_iiq_class)
+
+            # If the given class has custom fields to be synced,
+            # extract the appropriate custom fields
+            #TODO: users turns out don't have many custom fields
+            #TODO: Add assets & test
+
+                
+
 
         return iiq_classes
