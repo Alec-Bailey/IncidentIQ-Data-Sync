@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+"""config.py: Retrieve configuration information
+
+Config uses configparser to read information from the user configured
+config.ini. Appropriately named variables are created for use elsewhere
+in the programs implementation.
+"""
+
 from configparser import ConfigParser
 
 cf = ConfigParser()
@@ -14,3 +22,5 @@ IIQ_TOKEN = cf.get('IncidentIQ', 'Token')
 # or up for servers which can handle the load (faster).
 PAGE_SIZE = cf.get('General', 'PageSize')
 THREADS = cf.get('General', 'Threads')
+
+#TODO: create a series of flags for database selection to determine UUID

@@ -1,16 +1,36 @@
-# User class respresents IncidentIQ users
+#!/usr/bin/env python
+"""user.py: Declaratively mapped User from IncidentIQ
+
+User contains the methods nescessary to pull and transofrm
+the data from the IncidentIQ to conform to declaratively mapped
+object in SqlAlcemy. User can be instantiated with data from
+IncidentIQ to insert into the specified database.
+"""
+
 from requests.models import HTTPError
 from sqlalchemy import Column, String, Integer, Date, Boolean
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
 from sqlalchemy.orm import validates
-from base import Base, IIQ_Datatype
+from base import Base, IIQ_Datatype as IIQ
+from custom_fields import UserCustomFields
 import config
 import requests
 from types import SimpleNamespace as Namespace
 
-class User(Base, IIQ_Datatype):
+class User(Base, IIQ):
+    """User is an instanciable class which holds all the information
+    for one User in IncidentIQ. User also contains methods to make an
+    API request to retreive an entire page of Users as well as
+    create an instance of the dynamic UserCustomFields class.
+    User is declaratively mapped in SqlAlchemy to the 'Users' table,
+    on instantiation Asset can be inserted into 'Users' via an SqlAlchemy
+    session."""
+
     __tablename__ = 'Users'
     __table_args__ = {'schema': config.SCHEMA}
+
+    # Retreive custom fields
+    custom_fields = UserCustomFields.parse_fields(UserCustomFields.get_fields_request(0))
 
     #TODO: using UNIQUEIDENTIFER at all, especially as it's correct type and PK presents an interesting
     # challenge, SqlAlchemy doesn't support a database agnostic way of dealing with this
@@ -46,50 +66,30 @@ class User(Base, IIQ_Datatype):
     IsOutOfOffice = Column(Boolean)
     Portal = Column(Integer)
 
+    fields = ['AccountSetupProgress', 'AuthenticatedBy', 'CreatedDate', 
+    'Email', 'ExternalId', 'FirstName', 'Grade', 'Homeroom', 
+    'InternalComments', 'IsActive', 'IsDeleted', 'IsEmailVerified',
+     'IsOnline', 'IsOnlineLastUpdated', 'IsOutOfOffice', 'IsWelcomeEmailSent',
+      'LastName', 'LocationId', 'LocationName', 'ModifiedDate', 'Phone',
+       'Portal', 'PreventProviderUpdates', 'RoleId', 'SchoolIdNumber', 
+       'SiteId', 'TrainingPercentComplete', 'UserId', 'Username']
+
     # Validator ensures empty strings are entered as null
-    @validates('UserId','IsDeleted','SiteId','CreatedDate','ModifiedDate',
-    'LocationId','LocationName','IsActive','IsOnline','IsOnlineLastUpdated',
-    'FirstName','LastName','Email','Username','Phone','SchoolIdNumber','Grade',
-    'Homeroom','ExternalId','InternalComments','RoleId','AuthenticatedBy',
-    'AccountSetupProgress','TrainingPercentComplete','IsEmailVerified',
-    'IsWelcomeEmailSent','PreventProviderUpdates','IsOutOfOffice','Portal')
+    @validates(*fields)
     def empty_string_to_null(self, key, value):
-        if isinstance(value, str) and value == '':
-            return None
-        else:
-            return value
+        return super().empty_string_to_null(key, value)
 
     def __init__(self, data):
-        # Extract fields from the raw data
-        self.UserId = data.UserId
-        self.IsDeleted = data.IsDeleted
-        self.SiteId = data.SiteId
-        self.CreatedDate = data.CreatedDate
-        self.ModifiedDate = data.ModifiedDate
-        self.LocationId = data.LocationId
-        self.LocationName = data.LocationName
-        self.IsActive = data.IsActive
-        self.IsOnline = data.IsOnline
-        self.IsOnlineLastUpdated = data.IsOnlineLastUpdated
-        self.FirstName = data.FirstName
-        self.LastName = data.LastName
-        self.Email = data.Email
-        self.Username = data.Username
-        self.Phone = data.Phone
-        self.SchoolIdNumber = data.SchoolIdNumber
-        self.Grade = data.Grade
-        self.Homeroom = data.Homeroom
-        self.ExternalId = data.ExternalId
-        self.InternalComments = data.InternalComments
-        self.RoleId = data.RoleId
-        self.AuthenticatedBy = data.AuthenticatedBy
-        self.AccountSetupProgress = data.AccountSetupProgress
-        self.TrainingPercentComplete = data.TrainingPercentComplete
-        self.IsEmailVerified = data.IsEmailVerified
-        self.IsWelcomeEmailSent = data.IsWelcomeEmailSent
-        self.PreventProviderUpdates = data.PreventProviderUpdates
-        self.IsOutOfOffice = data.IsOutOfOffice
-        self.Portal = data.Portal
+        # Extract fields from the raw data, optional nested fields
+        # can be retrieved easily with find_element *args (See asset.py)
+        for field in self.fields:
+            # For non-nested fields that exist at the first level of the JSON
+            # we can use setattr to assign values, since the fields are
+            # named exactly as they appear in the JSON. For example, an asset
+            # JSON response will have a field 'AssetId' at the base level of that item. 
+            # Thus, find_element can grab it simply by being passed 'AssetId'. By design,
+            # the column is also named 'AssetId', so we can iterate simply and set these fields.
+            setattr(self, field, IIQ.find_element(data, field))
 
     @staticmethod
     def get_data_request(page):
@@ -108,7 +108,7 @@ class User(Base, IIQ_Datatype):
         }
         
         response =  requests.request("POST", url, headers=headers, data=payload, files=files)
-
+        
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             raise HTTPError("""A request returned a status code other than 200\n
@@ -121,12 +121,18 @@ class User(Base, IIQ_Datatype):
         # Return the response
         return response
 
-    # Retrieve the number of pages to iterate through
     @staticmethod
     def get_num_pages():
         return User.get_data_request(0).json()['Paging']['PageCount']
 
-    # Retreives all users from a request page and returns a list of all as User objects
     @classmethod
     def get_page(cls, page_number):
         return super().get_page(page_number)
+
+    @staticmethod
+    def get_custom_type():
+        return UserCustomFields
+
+    @classmethod
+    def _get_custom_fields(cls, item):
+        return super()._get_custom_fields(item)
