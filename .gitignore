@@ -3,3 +3,4 @@
 config.ini
 __pycache__
 out.txt
+config-testing.ini
