@@ -19,7 +19,7 @@ Contents
 ---
 Our district needed a tool that:
 + Pulls different types of Incident IQ data (Assets, Users, Locations) into a local database
-+ Can dynamically update tables for changing custom fields
++ Can dynamically create and update tables for changing custom fields
 + Is configurable to run on changing infrastructure
 + Is maintainable and extensible
 
@@ -72,9 +72,9 @@ ConnectionString: 'postgresql://azurediamond:hunter2@localhost/mydatabase'
 #### Configuring your IncidentIQ Instance
 **Instance**
 
-This is simple, the your IncidentIQ instance is just the your unique host URL for IncidentIQ. Usually, this is of the format `domain.incidentiq.com`.
+This is simple, your IncidentIQ instance is just the unique host URL your district uses to access IncidentIQ. Usually, this is of the format `domain.incidentiq.com`.
 
-Chicago Public Schools might have the host URL `cps.incidentiq.com`
+*For example* Chicago Public Schools might have the host URL `cps.incidentiq.com`
 
 **Token**
 
