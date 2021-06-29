@@ -8,7 +8,7 @@ IncidentIQ to insert into the specified database.
 """
 
 from sqlalchemy import Column, String, Integer, Date, Boolean, Numeric
-from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
+from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 import requests
 from requests.models import HTTPError
 import json
@@ -33,51 +33,52 @@ class Asset(Base, IIQ):
     # Retrieve custom fields
     custom_fields = AssetCustomFields.parse_fields(AssetCustomFields.get_fields_request(0))
 
-    AssetId = Column(UNIQUEIDENTIFIER, primary_key=True)
-    SiteId = Column(UNIQUEIDENTIFIER)
-    ProductId = Column(UNIQUEIDENTIFIER)
+    #TODO: Add owner????
+    AssetId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
+    SiteId = Column(UNIQUEIDENTIFIER(binary=False))
+    ProductId = Column(UNIQUEIDENTIFIER(binary=False))
     CreatedDate = Column(Date)
     ModifiedDate = Column(Date)
-    AssetTypeId = Column(UNIQUEIDENTIFIER)
-    AssetTypeName = Column(String)
+    AssetTypeId = Column(UNIQUEIDENTIFIER(binary=False))
+    AssetTypeName = Column(String(length=config.STRING_LENGTH))
     IsDeleted = Column(Boolean)
     IsTraining = Column(Boolean)
-    StatusTypeId = Column(UNIQUEIDENTIFIER)
-    AssetTag = Column(String)
-    SerialNumber = Column(String)
-    ExternalId = Column(String)
-    Name = Column(String)
+    StatusTypeId = Column(UNIQUEIDENTIFIER(binary=False))
+    AssetTag = Column(String(length=config.STRING_LENGTH))
+    SerialNumber = Column(String(length=config.STRING_LENGTH))
+    ExternalId = Column(String(length=config.STRING_LENGTH))
+    Name = Column(String(length=config.STRING_LENGTH))
     CanOwnerManage = Column(Boolean)
     CanSubmitTicket = Column(Boolean)
     IsFavorite = Column(Boolean)
-    ModelId = Column(UNIQUEIDENTIFIER)
-    ModelName = Column(String) # Nested
-    LocationId = Column(UNIQUEIDENTIFIER)
-    LocationName = Column(String) # Nested
-    LocationDetails = Column(String)
-    LocationRoomId = Column(UNIQUEIDENTIFIER)
-    LocationRoomName = Column(String) # Nested
-    Notes = Column(String)
+    ModelId = Column(UNIQUEIDENTIFIER(binary=False))
+    ModelName = Column(String(length=config.STRING_LENGTH)) # Nested
+    LocationId = Column(UNIQUEIDENTIFIER(binary=False))
+    LocationName = Column(String(length=config.STRING_LENGTH)) # Nested
+    LocationDetails = Column(String(length=config.STRING_LENGTH))
+    LocationRoomId = Column(UNIQUEIDENTIFIER(binary=False))
+    LocationRoomName = Column(String(length=config.STRING_LENGTH)) # Nested
+    Notes = Column(String(length=config.STRING_LENGTH))
     HasOpenTicket = Column(Boolean)
     OpenTicket = Column(Integer)
     PurchasedDate = Column(Date)
     DeployedDate = Column(Date)
     RetiredDate = Column(Date)
     PurchasePrice = Column(Numeric)
-    PurchasePoNumber = Column(String)
+    PurchasePoNumber = Column(String(length=config.STRING_LENGTH))
     WarrantyExpirationDate = Column(Date)
-    WarrantyInfo = Column(String)
+    WarrantyInfo = Column(String(length=config.STRING_LENGTH))
     LastInventoryDate = Column(Date)
-    InvoiceNumber = Column(String)
-    Vendor = Column(String)
+    InvoiceNumber = Column(String(length=config.STRING_LENGTH))
+    Vendor = Column(String(length=config.STRING_LENGTH))
     InsuranceExpirationDate = Column(Date)
-    InsuranceInfo = Column(String)
-    FundingSourceId = Column(UNIQUEIDENTIFIER)
+    InsuranceInfo = Column(String(length=config.STRING_LENGTH))
+    FundingSourceId = Column(UNIQUEIDENTIFIER(binary=False))
     IsReadOnly = Column(Boolean)
-    StorageUnitNumber = Column(String)
+    StorageUnitNumber = Column(String(length=config.STRING_LENGTH))
     StorageSlotNumber = Column(Integer)
-    StorageLocationId = Column(UNIQUEIDENTIFIER)
-    StorageLocationName = Column(String)
+    StorageLocationId = Column(UNIQUEIDENTIFIER(binary=False))
+    StorageLocationName = Column(String(length=config.STRING_LENGTH))
 
     fields = ['AssetId', 'AssetTag', 'AssetTypeId', 'AssetTypeName', 
     'CanOwnerManage', 'CanSubmitTicket', 'CreatedDate', 'DeployedDate',
@@ -94,8 +95,8 @@ class Asset(Base, IIQ):
 
     # Validator ensures empty strings are entered as null
     @validates(*fields)
-    def empty_string_to_null(self, key, value):
-        return super().empty_string_to_null(key, value)
+    def validate_inserts(self, key, value):
+        return super().validate_inserts(key, value)
 
     def __init__(self, data):
         # Extract fields from the raw data, optional fields are retrieved
@@ -135,7 +136,7 @@ class Asset(Base, IIQ):
         'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("POST", url, headers=headers, data=payload, timeout=config.TIMEOUT)
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             print("ERROR: STATUS CODE NOT 200")

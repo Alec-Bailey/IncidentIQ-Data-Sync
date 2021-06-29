@@ -9,7 +9,7 @@ IncidentIQ to insert into the specified database.
 
 from requests.models import HTTPError
 from sqlalchemy import Column, String, Integer, Date, Boolean
-from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
+from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 from sqlalchemy.orm import validates
 from base import Base, IIQ_Datatype as IIQ
 from custom_fields import UserCustomFields
@@ -32,32 +32,28 @@ class User(Base, IIQ):
     # Retreive custom fields
     custom_fields = UserCustomFields.parse_fields(UserCustomFields.get_fields_request(0))
 
-    #TODO: using UNIQUEIDENTIFER at all, especially as it's correct type and PK presents an interesting
-    # challenge, SqlAlchemy doesn't support a database agnostic way of dealing with this
-    # will have to create a case for other databases down the road and eventually test it
-    # Dockerize some databases perhaps to test, for now this is the MsSql way of dealing with it
-    UserId = Column(UNIQUEIDENTIFIER, primary_key=True)
+    UserId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
     IsDeleted = Column(Boolean)
-    SiteId = Column(UNIQUEIDENTIFIER)
+    SiteId = Column(UNIQUEIDENTIFIER(binary=False))
     CreatedDate = Column(Date)
     ModifiedDate = Column(Date)
-    LocationId = Column(UNIQUEIDENTIFIER)
-    LocationName = Column(String)
+    LocationId = Column(UNIQUEIDENTIFIER(binary=False))
+    LocationName = Column(String(length=config.STRING_LENGTH))
     IsActive = Column(Boolean)
     IsOnline = Column(Boolean)
     IsOnlineLastUpdated = Column(Date)
-    FirstName = Column(String)
-    LastName = Column(String)
-    Email = Column(String)
-    Username = Column(String)
-    Phone = Column(String)
-    SchoolIdNumber = Column(String)
-    Grade = Column(String)
-    Homeroom = Column(String)
-    ExternalId = Column(UNIQUEIDENTIFIER)
-    InternalComments = Column(String)
-    RoleId = Column(String)
-    AuthenticatedBy = Column(String)
+    FirstName = Column(String(length=config.STRING_LENGTH))
+    LastName = Column(String(length=config.STRING_LENGTH))
+    Email = Column(String(length=config.STRING_LENGTH))
+    Username = Column(String(length=config.STRING_LENGTH))
+    Phone = Column(String(length=config.STRING_LENGTH))
+    SchoolIdNumber = Column(String(length=config.STRING_LENGTH))
+    Grade = Column(String(length=config.STRING_LENGTH))
+    Homeroom = Column(String(length=config.STRING_LENGTH))
+    ExternalId = Column(UNIQUEIDENTIFIER(binary=False))
+    InternalComments = Column(String(length=config.STRING_LENGTH))
+    RoleId = Column(String(length=config.STRING_LENGTH))
+    AuthenticatedBy = Column(String(length=config.STRING_LENGTH))
     AccountSetupProgress = Column(Integer)
     TrainingPercentComplete = Column(Integer)
     IsEmailVerified = Column(Boolean)
@@ -76,8 +72,8 @@ class User(Base, IIQ):
 
     # Validator ensures empty strings are entered as null
     @validates(*fields)
-    def empty_string_to_null(self, key, value):
-        return super().empty_string_to_null(key, value)
+    def validate_inserts(self, key, value):
+        return super().validate_inserts(key, value)
 
     def __init__(self, data):
         # Extract fields from the raw data, optional nested fields
@@ -107,7 +103,7 @@ class User(Base, IIQ):
         'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
         
-        response =  requests.request("POST", url, headers=headers, data=payload, files=files)
+        response =  requests.request("POST", url, headers=headers, data=payload, files=files, timeout=config.TIMEOUT)
         
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
@@ -124,11 +120,7 @@ class User(Base, IIQ):
     @staticmethod
     def get_num_pages():
         return User.get_data_request(0).json()['Paging']['PageCount']
-
-    @classmethod
-    def get_page(cls, page_number):
-        return super().get_page(page_number)
-
+#from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
     @staticmethod
     def get_custom_type():
         return UserCustomFields

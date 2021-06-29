@@ -1,6 +1,6 @@
 # A location class representing IncidentIQ Locaitons
 from sqlalchemy import Column, String, Integer, Date, Boolean, Numeric
-from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER as UNIQUEIDENTIFIER # TODO: we can use this import statement in a switch to support multiple dbs
+from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 from sqlalchemy.orm import validates
 from base import Base, IIQ_Datatype as IIQ
 import config
@@ -11,29 +11,30 @@ class Location(Base, IIQ):
     __tablename__ = 'Locations'
     __table_args__ = {'schema': config.SCHEMA}
 
-    LocationId = Column(UNIQUEIDENTIFIER, primary_key=True)
-    SiteId = Column(UNIQUEIDENTIFIER)
-    Name = Column(String)
-    Abbreviation = Column(String)
+    LocationId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
+    SiteId = Column(UNIQUEIDENTIFIER(binary=False))
+    Name = Column(String(length=config.STRING_LENGTH))
+    Abbreviation = Column(String(length=config.STRING_LENGTH))
     CreatedDate = Column(Date)
     ModifiedDate = Column(Date)
-    AddressId = Column(UNIQUEIDENTIFIER)
-    Street1 = Column(String)
-    Street2 = Column(String)
-    City = Column(String)
-    Zip = Column(String)
-    Country = Column(String)
+    AddressId = Column(UNIQUEIDENTIFIER(binary=False))
+    Street1 = Column(String(length=config.STRING_LENGTH))
+    Street2 = Column(String(length=config.STRING_LENGTH))
+    City = Column(String(length=config.STRING_LENGTH))
+    Zip = Column(String(length=config.STRING_LENGTH))
+    Country = Column(String(length=config.STRING_LENGTH))
     Latitude = Column(Numeric)
     Longitude = Column(Numeric)
-    LocationTypeId = Column(UNIQUEIDENTIFIER)
-    LocationType = Column(String) #LocationType.Name
-    
+    LocationTypeId = Column(UNIQUEIDENTIFIER(binary=False))
+    LocationType = Column(String(length=config.STRING_LENGTH)) #LocationType.Name
 
-    @validates('LocationId', 'SiteId', 'Name', 'Abbreviation', 'CreatedDate',
+    fields = ['LocationId', 'SiteId', 'Name', 'Abbreviation', 'CreatedDate',
      'ModifiedDate', 'AddressId', 'Street1', 'Street2', 'City', 'Zip', 
-     'Country', 'Latitude', 'Longitude', 'LocationTypeId', 'LocationType')
-    def empty_string_to_null(self, key, value):
-         return super().empty_string_to_null(key, value)
+     'Country', 'Latitude', 'Longitude', 'LocationTypeId', 'LocationType']
+
+    @validates(*fields)
+    def validate_inserts(self, key, value):
+         return super().validate_inserts(key, value)
 
     def __init__(self, data):
         # Call find_element on fields which are marked optional to be returned by the
@@ -75,7 +76,7 @@ class Location(Base, IIQ):
         'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        return requests.request("GET", url, headers=headers, data=payload)
+        return requests.request("GET", url, headers=headers, data=payload, timeout=config.TIMEOUT)
 
     @staticmethod
     def get_num_pages():
