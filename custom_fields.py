@@ -12,7 +12,8 @@ instantiated and inserted into a database with an SqlAlchemy Session.
 """
 
 from sqlalchemy import Column, String, Integer, Date, Table
-from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
+#from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
+from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 from sqlalchemy.orm import mapper
 import requests
 from requests.models import HTTPError
@@ -62,8 +63,8 @@ class IIQ_CustomFields(object):
     def create_table(cls, table_name, primarykey_name):
         #response = cls.get_fields_request(0)
         all_fields = cls.parse_fields(cls.get_fields_request(0))
-        t = Table(table_name, Base.metadata, Column(primarykey_name, UNIQUEIDENTIFIER, primary_key=True),
-        *(Column(field_name, String) for field_name in list(all_fields.values())), schema=config.SCHEMA)
+        t = Table(table_name, Base.metadata, Column(primarykey_name, UNIQUEIDENTIFIER(binary=False), primary_key=True),
+        *(Column(field_name, String(length=config.STRING_LENGTH)) for field_name in list(all_fields.values())), schema=config.SCHEMA)
         mapper(cls, t)
 
 
@@ -86,7 +87,7 @@ class UserCustomFields(IIQ_CustomFields):
         'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("POST", url, headers=headers, data=payload, timeout=config.TIMEOUT)
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             raise HTTPError("""A request returned a status code other than 200\n
@@ -115,7 +116,7 @@ class AssetCustomFields(IIQ_CustomFields):
         'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("POST", url, headers=headers, data=payload, timeout=config.TIMEOUT)
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             raise HTTPError("""A request returned a status code other than 200\n
