@@ -33,10 +33,16 @@ class IIQ_Datatype:
     and transform data from the IncidentIQ API.
     """
 
-    # Validator ensures empty strings are entered as null
-    def empty_string_to_null(self, key, value):
+    # Validator ensures empty strings are entered as null and
+    # strings never exceed the capacity imposed by multi-database support. 
+    # The smallest VARCHAR type we support is 4,000 characters due to 
+    # ORACLE DB. There is probably no good reason for any asset to have a
+    # string this long in the database
+    def validate_inserts(self, key, value):
         if isinstance(value, str) and value == '':
-            return None
+            return None # Set empty string to None (Null in databases)
+        elif isinstance(value, str) and len(value) >= config.STRING_LENGTH:
+            return value[0:config.STRING_LENGTH -1] # Truncate the string
         else:
             return value
 
