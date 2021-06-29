@@ -15,6 +15,7 @@ cf.read('config.ini')
 DATABASE = cf.get('Database', 'Database')
 DB_CONNECTION_STRING = cf.get('Database', 'ConnectionString')
 SCHEMA = cf.get('Database', 'Schema')
+STRING_LENGTH = int(cf.get('Database', 'StringLength'))
 # Incident IQ Credentials
 IIQ_INSTANCE = cf.get('IncidentIQ', 'Instance')
 IIQ_TOKEN = cf.get('IncidentIQ', 'Token')
@@ -22,5 +23,4 @@ IIQ_TOKEN = cf.get('IncidentIQ', 'Token')
 # or up for servers which can handle the load (faster).
 PAGE_SIZE = cf.get('General', 'PageSize')
 THREADS = cf.get('General', 'Threads')
-
-#TODO: create a series of flags for database selection to determine UUID
+TIMEOUT = int(cf.get('General', 'Timeout'))
