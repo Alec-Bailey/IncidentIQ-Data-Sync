@@ -5,3 +5,4 @@ __pycache__
 out.txt
 config-testing.ini
 config-prod.ini
+config-local.ini
