@@ -15,7 +15,7 @@ Contents
  * [Contributing](#contributing)
  * [License](#license)
 
-### Why?
+## Why?
 ---
 Our district needed a tool that:
 + Pulls different types of Incident IQ data (Assets, Users, Locations) into a local database
@@ -23,7 +23,7 @@ Our district needed a tool that:
 + Is configurable to run on changing infrastructure
 + Is maintainable and extensible
 
-### Installation
+## Installation
 ---
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the requirements.
@@ -36,18 +36,19 @@ Rename `config-sample.ini` to `config.ini`
 
 Set up your database connection - see [Configuration](#configuration)
 
-### Configuration
+## Configuration
 ---
-#### Supported Databases
+### Supported Databases
 Currently, we support:
  * [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server)
  * [Postgres](https://www.postgresql.org/)
  * [MySql](https://www.mysql.com/)
  * [Oracle](https://www.oracle.com/database/technologies/)
+ * [MariaDB](https://mariadb.org/)
 
 Support may be added for any other database [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
 
-#### Configuring your database connection string
+### Configuring your database connection string
 To figure out how to write a connection string for your database see the [offical SqlAlchemy guide]( https://docs.sqlalchemy.org/en/14/core/engines.html).
 
 **Basic Connection String**
@@ -69,7 +70,7 @@ ConnectionString: 'postgresql://azurediamond:hunter2@localhost/mydatabase'
 ```
 ---
 
-#### Configuring your IncidentIQ Instance
+### Configuring your IncidentIQ Instance
 **Instance**
 
 This is simple, your IncidentIQ instance is just the unique host URL your district uses to access IncidentIQ. Usually, this is of the format `domain.incidentiq.com`.
@@ -96,7 +97,7 @@ Instance: cps.incidentiq.com
 Token: fewig23823g98h(*Hg203g92gjaglakjewjg8ag9w38gfhy9g3pg8y29ghig101--t--_)(EF9uw890euf9HFslkhjglajg4h29q8ytogjlawjl23j28u290gu2903gjlzsojgagya9pw38gyu29830ogjijgapwe49g8yu2pu8gjawoigja8w3hg982ugpoajgoiaesjg982h39ga2h9
 ```
 
-#### Optional Parameters
+### Optional Parameters
 The following are optional parameters, explained more in-depth. The config file is also commented, explaing what each of these do.
 
 
@@ -108,7 +109,7 @@ Additionally, if you are using a database like MySQL that does use shcema and da
 In all other cases, if left blank, the default schema will be used.
 
 
-### Usage
+## Usage
 ---
 Simply execute main.py
 ```bash
@@ -117,7 +118,7 @@ python3 main.py
 
 The sync may take a few minutes to complete, depending on the size of your inventory. This is mostly due to the time the API takes to respond to large requests.
 
-### What can I sync?
+## What can I sync?
 ---
 
 1. By default these are synced
@@ -134,10 +135,10 @@ The sync may take a few minutes to complete, depending on the size of your inven
   * `Rooms`
 
 
-### Contributing
+## Contributing
 ---
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-### License
+## License
 ---
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
