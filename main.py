@@ -68,6 +68,7 @@ def __execute_sync(IIQ_Type : IIQ_Datatype):
 if __name__ == '__main__':
     start_time = time.time() #TODO: remove
     __generate_custom_fields_tables()
+    Base.metadata.drop_all(bind=engine) # Drop all tables to pull fresh data
     # Generate database schema from SqlAlchemy
     Base.metadata.create_all(engine)
 
