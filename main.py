@@ -68,6 +68,9 @@ def __execute_sync(IIQ_Type : IIQ_Datatype):
 if __name__ == '__main__':
     start_time = time.time() #TODO: remove
     __generate_custom_fields_tables()
+    # TODO: issue with mariadb checking for tables and finding them to not exist
+    # can be fixed with setting checkfirst=Fasle, but this causes an exception
+    # when tables are not in the database
     Base.metadata.drop_all(bind=engine) # Drop all tables to pull fresh data
     # Generate database schema from SqlAlchemy
     Base.metadata.create_all(engine)
