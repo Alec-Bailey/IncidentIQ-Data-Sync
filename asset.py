@@ -11,8 +11,6 @@ from sqlalchemy import Column, String, Integer, Date, Boolean, Numeric
 from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
 import requests
 from requests.models import HTTPError
-import json
-
 from sqlalchemy.orm.mapper import validates
 from base import Base, IIQ_Datatype as IIQ
 from custom_fields import AssetCustomFields
@@ -33,7 +31,6 @@ class Asset(Base, IIQ):
     # Retrieve custom fields
     custom_fields = AssetCustomFields.parse_fields(AssetCustomFields.get_fields_request(0))
 
-    #TODO: Add owner????
     AssetId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
     SiteId = Column(UNIQUEIDENTIFIER(binary=False))
     ProductId = Column(UNIQUEIDENTIFIER(binary=False))
@@ -53,6 +50,8 @@ class Asset(Base, IIQ):
     IsFavorite = Column(Boolean)
     ModelId = Column(UNIQUEIDENTIFIER(binary=False))
     ModelName = Column(String(length=config.STRING_LENGTH)) # Nested
+    OwnerId = Column(UNIQUEIDENTIFIER(binary=False))
+    OwnerName = Column(String(length=config.STRING_LENGTH)) # Nested
     LocationId = Column(UNIQUEIDENTIFIER(binary=False))
     LocationName = Column(String(length=config.STRING_LENGTH)) # Nested
     LocationDetails = Column(String(length=config.STRING_LENGTH))
@@ -87,7 +86,7 @@ class Asset(Base, IIQ):
     'IsDeleted', 'IsFavorite', 'IsReadOnly', 'IsTraining',
     'LastInventoryDate', 'LocationDetails', 'LocationId', 'LocationName',
     'LocationRoomId', 'LocationRoomName', 'ModelId', 'ModelName', 
-    'ModifiedDate', 'Name', 'Notes', 'OpenTicket', 'ProductId', 
+    'ModifiedDate', 'Name', 'Notes', 'OpenTicket', 'OwnerId', 'ProductId', 
     'PurchasePoNumber', 'PurchasePrice', 'PurchasedDate', 'RetiredDate', 
     'SerialNumber', 'SiteId', 'StatusTypeId', 'StorageLocationId', 
     'StorageLocationName', 'StorageSlotNumber', 'StorageUnitNumber', 'Vendor',
@@ -115,6 +114,7 @@ class Asset(Base, IIQ):
         # often they are purposeful inclusions that aren't nescessary but useful to
         # end users. This is harmless since find_element will set them to None by default
         self.ModelName = IIQ.find_element(data, 'Model', 'Name')
+        self.OwnerName = IIQ.find_element(data, 'Owner', 'Name')
         self.LocationName = IIQ.find_element(data, 'Location', 'Name')
         self.LocationRoomName = IIQ.find_element(data, 'LocationRoom', 'Name')
 
