@@ -96,6 +96,18 @@ Instance: cps.incidentiq.com
 Token: fewig23823g98h(*Hg203g92gjaglakjewjg8ag9w38gfhy9g3pg8y29ghig101--t--_)(EF9uw890euf9HFslkhjglajg4h29q8ytogjlawjl23j28u290gu2903gjlzsojgagya9pw38gyu29830ogjijgapwe49g8yu2pu8gjawoigja8w3hg982ugpoajgoiaesjg982h39ga2h9
 ```
 
+#### Optional Parameters
+The following are optional parameters, explained more in-depth. The config file is also commented, explaing what each of these do.
+
+
+**Schema**
+
+For Databases such as MsSql that do not treat Schema as a Database itself, Schema can be specified. A schema will *not* be created if it does not already exist.
+Additionally, if you are using a database like MySql that does use shcema and database interchangeably, leave this blank.
+
+In all other cases, if left blank, the default schema will be used.
+
+
 ### Usage
 ---
 Simply execute main.py
