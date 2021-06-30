@@ -15,7 +15,6 @@ from base import Base, IIQ_Datatype as IIQ
 from custom_fields import UserCustomFields
 import config
 import requests
-from types import SimpleNamespace as Namespace
 
 class User(Base, IIQ):
     """User is an instanciable class which holds all the information

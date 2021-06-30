@@ -5,7 +5,6 @@ from sqlalchemy.orm import validates
 from base import Base, IIQ_Datatype as IIQ
 import config
 import requests
-from types import SimpleNamespace as Namespace
 
 class Location(Base, IIQ):
     __tablename__ = 'Locations'
