@@ -66,10 +66,10 @@ class IIQ_CustomFields(object):
         t = Table(table_name, Base.metadata, Column(primarykey_name, UNIQUEIDENTIFIER(binary=False), primary_key=True),
         *(Column(field_name, String(length=config.STRING_LENGTH)) for field_name in list(all_fields.values())), schema=config.SCHEMA)
         mapper(cls, t)
+        cls.__table__ = t
 
 
 class UserCustomFields(IIQ_CustomFields):
-
     primarykey_name = 'UserId'
 
     @staticmethod
@@ -99,7 +99,6 @@ class UserCustomFields(IIQ_CustomFields):
         super().__init__(self.primarykey_name, asset_id, fields, attributes)
 
 class AssetCustomFields(IIQ_CustomFields):
-
     primarykey_name = 'AssetId'
     
     def get_fields_request(page_number):
