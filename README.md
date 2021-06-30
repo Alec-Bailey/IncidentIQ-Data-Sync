@@ -1,7 +1,7 @@
 
 # Incident IQ Data Sync
 
-Incident IQ Data Sync is a tool that allows you to pull down all of IncidentIQ's data into a local database, regardless of your specific configuration.
+Incident IQ Data Sync is a tool that allows you to pull down all of IncidentIQ's data into a local database, regardless of your specific configuration or SQL database of choice.
 
 Contents
 ========
@@ -102,8 +102,8 @@ The following are optional parameters, explained more in-depth. The config file 
 
 **Schema**
 
-For Databases such as MsSql that do not treat Schema as a Database itself, Schema can be specified. A schema will *not* be created if it does not already exist.
-Additionally, if you are using a database like MySql that does use shcema and database interchangeably, leave this blank.
+For Databases such as Microsoft SQL Server that do not treat Schema as a Database itself, Schema can be specified. A schema will *not* be created if it does not already exist.
+Additionally, if you are using a database like MySQL that does use shcema and database interchangeably, leave this blank.
 
 In all other cases, if left blank, the default schema will be used.
 
