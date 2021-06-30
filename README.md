@@ -32,9 +32,20 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 pip install -r requirements.txt
 ```
 
+*Note* Some libraries included in requirements.txt are database specific, and can be removed for your use case.
+
 Rename `config-sample.ini` to `config.ini`
 
 Set up your database connection - see [Configuration](#configuration)
+
+*Note* some databases may require additional libraries on your system. It is up to you
+to configure your system correctly.
+
+### Postgres
+
+You may need to install libraries specific to Posgres, on Debian Based systems
+`sudo apt-get install libpq-dev python-dev`
+
 
 ## Configuration
 ---
@@ -44,7 +55,7 @@ Currently, we support:
  * [Postgres](https://www.postgresql.org/)
  * [MySql](https://www.mysql.com/)
  * [Oracle](https://www.oracle.com/database/technologies/)
- * [MariaDB](https://mariadb.org/)
+ * ~~[MariaDB](https://mariadb.org/)~~ *Currently broken*
 
 Support may be added for any other database [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
 
@@ -117,6 +128,7 @@ python3 main.py
 ```
 
 The sync may take a few minutes to complete, depending on the size of your inventory. This is mostly due to the time the API takes to respond to large requests.
+A slow connection to your database will also cause slower script execution.
 
 ## What can I sync?
 ---
