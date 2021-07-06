@@ -26,7 +26,7 @@ class Asset(Base, IIQ):
     on instantiation Asset can be inserted into 'Assets' via an SqlAlchemy
     session."""
 
-    __tablename__ = 'Assets'
+    __tablename__ = config.ASSETS_TABLE_NAME
     __table_args__ = {'schema': config.SCHEMA}
 
     # Retrieve custom fields

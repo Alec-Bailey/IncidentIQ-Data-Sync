@@ -15,6 +15,12 @@ cf.read('config.ini')
 DB_CONNECTION_STRING = cf.get('Database', 'ConnectionString')
 SCHEMA = cf.get('Database', 'Schema')
 STRING_LENGTH = int(cf.get('Database', 'StringLength'))
+# Table Names
+ASSETS_TABLE_NAME = cf.get('Tables', 'Assets')
+ASSETS_CF_TABLE_NAME = cf.get('Tables', 'AssetsCustomFields')
+USERS_TABLE_NAME = cf.get('Tables', 'Users')
+USERS_CF_TABLE_NAME = cf.get('Tables', 'UsersCustomFields')
+LOCATIONS_TABLE_NAME = cf.get('Tables', 'Locations')
 # Incident IQ Credentials
 IIQ_INSTANCE = cf.get('IncidentIQ', 'Instance')
 IIQ_TOKEN = cf.get('IncidentIQ', 'Token')

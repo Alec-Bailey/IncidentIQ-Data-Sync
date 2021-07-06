@@ -29,8 +29,8 @@ __status__ = "Development"
 # Dynamically create ORM mapped classes and tables from the existing
 # custom fields for individual types in IncidentIQ.
 def __generate_custom_fields_tables():
-    UserCustomFields.create_table('UserCustomFields', 'UserId')
-    AssetCustomFields.create_table('AssetCustomFields', 'AssetId')
+    UserCustomFields.create_table(config.USERS_CF_TABLE_NAME, 'UserId')
+    AssetCustomFields.create_table(config.ASSETS_CF_TABLE_NAME, 'AssetId')
 
 
 # One unit of work, executed by a thread. Creates a session and preforms a web

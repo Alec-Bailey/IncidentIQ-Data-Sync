@@ -26,7 +26,7 @@ class User(Base, IIQ):
     on instantiation Asset can be inserted into 'Users' via an SqlAlchemy
     session."""
 
-    __tablename__ = 'Users'
+    __tablename__ = config.USERS_TABLE_NAME
     __table_args__ = {'schema': config.SCHEMA}
 
     # Retreive custom fields

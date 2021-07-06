@@ -8,7 +8,7 @@ import requests
 
 
 class Location(Base, IIQ):
-    __tablename__ = 'Locations'
+    __tablename__ = config.LOCATIONS_TABLE_NAME
     __table_args__ = {'schema': config.SCHEMA}
 
     LocationId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
