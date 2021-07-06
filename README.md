@@ -1,6 +1,6 @@
 
 # Incident IQ Data Sync
-
+![SocialImage](https://github.com/Alec-Bailey/IncidentIQ-Data-Sync/blob/master/images/social.png?raw=true "Social Image")
 Incident IQ Data Sync is a dynamic, database agnostic tool which syncs all of IncidentIQ's data into a local database. Incident IQ Data Sync was designed to be performant, configurable and easily extended.
 
 Contents
