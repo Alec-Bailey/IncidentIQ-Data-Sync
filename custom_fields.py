@@ -23,6 +23,7 @@ from sqlalchemy.sql.expression import all_
 from base import Base, IIQ_Datatype
 import config
 
+
 # A custom fields metaclass which allows for the dynamic deffinition
 # of fields given the API response
 class IIQ_CustomFields(object):
@@ -43,7 +44,8 @@ class IIQ_CustomFields(object):
         return all_fields
 
     # Set all passed in attributes as fields of the class
-    def __init__(self, primarykey_name, primarykey_id, custom_fields, attributes):
+    def __init__(self, primarykey_name, primarykey_id, custom_fields,
+                 attributes):
 
         # Set the primary key
         setattr(self, primarykey_name, primarykey_id)
@@ -63,8 +65,14 @@ class IIQ_CustomFields(object):
     def create_table(cls, table_name, primarykey_name):
         #response = cls.get_fields_request(0)
         all_fields = cls.parse_fields(cls.get_fields_request(0))
-        t = Table(table_name, Base.metadata, Column(primarykey_name, UNIQUEIDENTIFIER(binary=False), primary_key=True),
-        *(Column(field_name, String(length=config.STRING_LENGTH)) for field_name in list(all_fields.values())), schema=config.SCHEMA)
+        t = Table(table_name,
+                  Base.metadata,
+                  Column(primarykey_name,
+                         UNIQUEIDENTIFIER(binary=False),
+                         primary_key=True),
+                  *(Column(field_name, String(length=config.STRING_LENGTH))
+                    for field_name in list(all_fields.values())),
+                  schema=config.SCHEMA)
         mapper(cls, t)
         cls.__table__ = t
 
@@ -74,20 +82,26 @@ class UserCustomFields(IIQ_CustomFields):
 
     @staticmethod
     def get_fields_request(page_number):
-        url = "https://" + str(config.IIQ_INSTANCE) + "/api/v1.0/custom-fields?$p=" + str(page_number) + "&$s=999999"
+        url = "https://" + str(
+            config.IIQ_INSTANCE) + "/api/v1.0/custom-fields?$p=" + str(
+                page_number) + "&$s=999999"
 
         payload = json.dumps({
-        "SiteScope": "Aggregate",
-        "Strategy": "AggregateUser"
+            "SiteScope": "Aggregate",
+            "Strategy": "AggregateUser"
         })
         headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36',
-        'content-type': 'application/json',
-        'accept': 'application/json, text/plain, */*',
-        'Authorization': 'Bearer ' + config.IIQ_TOKEN
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36',
+            'content-type': 'application/json',
+            'accept': 'application/json, text/plain, */*',
+            'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload, timeout=config.TIMEOUT)
+        response = requests.request("POST",
+                                    url,
+                                    headers=headers,
+                                    data=payload,
+                                    timeout=config.TIMEOUT)
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             raise HTTPError("""A request returned a status code other than 200\n
@@ -98,31 +112,37 @@ class UserCustomFields(IIQ_CustomFields):
     def __init__(self, asset_id, fields, attributes):
         super().__init__(self.primarykey_name, asset_id, fields, attributes)
 
+
 class AssetCustomFields(IIQ_CustomFields):
     primarykey_name = 'AssetId'
-    
+
     def get_fields_request(page_number):
-        url = "https://" + str(config.IIQ_INSTANCE) + "/api/v1.0/custom-fields?$p=" + str(page_number) + "&$s=999999"
+        url = "https://" + str(
+            config.IIQ_INSTANCE) + "/api/v1.0/custom-fields?$p=" + str(
+                page_number) + "&$s=999999"
 
         payload = json.dumps({
-        "SiteScope": "Aggregate",
-        "Strategy": "AggregateAsset"
+            "SiteScope": "Aggregate",
+            "Strategy": "AggregateAsset"
         })
         headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36',
-        'content-type': 'application/json',
-        'accept': 'application/json, text/plain, */*',
-        'Authorization': 'Bearer ' + config.IIQ_TOKEN
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36',
+            'content-type': 'application/json',
+            'accept': 'application/json, text/plain, */*',
+            'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload, timeout=config.TIMEOUT)
+        response = requests.request("POST",
+                                    url,
+                                    headers=headers,
+                                    data=payload,
+                                    timeout=config.TIMEOUT)
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             raise HTTPError("""A request returned a status code other than 200\n
             Status Code: """ + str(response.status_code))
 
         return response
-
 
     def __init__(self, asset_id, fields, attributes):
         super().__init__(self.primarykey_name, asset_id, fields, attributes)

@@ -6,6 +6,7 @@ from base import Base, IIQ_Datatype as IIQ
 import config
 import requests
 
+
 class Location(Base, IIQ):
     __tablename__ = 'Locations'
     __table_args__ = {'schema': config.SCHEMA}
@@ -25,15 +26,18 @@ class Location(Base, IIQ):
     Latitude = Column(Numeric)
     Longitude = Column(Numeric)
     LocationTypeId = Column(UNIQUEIDENTIFIER(binary=False))
-    LocationType = Column(String(length=config.STRING_LENGTH)) #LocationType.Name
+    LocationType = Column(
+        String(length=config.STRING_LENGTH))    #LocationType.Name
 
-    fields = ['LocationId', 'SiteId', 'Name', 'Abbreviation', 'CreatedDate',
-     'ModifiedDate', 'AddressId', 'Street1', 'Street2', 'City', 'Zip', 
-     'Country', 'Latitude', 'Longitude', 'LocationTypeId', 'LocationType']
+    fields = [
+        'LocationId', 'SiteId', 'Name', 'Abbreviation', 'CreatedDate',
+        'ModifiedDate', 'AddressId', 'Street1', 'Street2', 'City', 'Zip',
+        'Country', 'Latitude', 'Longitude', 'LocationTypeId', 'LocationType'
+    ]
 
     @validates(*fields)
     def validate_inserts(self, key, value):
-         return super().validate_inserts(key, value)
+        return super().validate_inserts(key, value)
 
     def __init__(self, data):
         # Call find_element on fields which are marked optional to be returned by the
@@ -51,7 +55,7 @@ class Location(Base, IIQ):
         self.Street2 = IIQ.find_element(data, 'Address', 'Street2')
         self.City = IIQ.find_element(data, 'Address', 'City')
         self.Zip = IIQ.find_element(data, 'Address', 'Zip')
-        self.Country = IIQ.find_element(data, 'Address' ,'Country') 
+        self.Country = IIQ.find_element(data, 'Address', 'Country')
         self.Latitude = IIQ.find_element(data, 'Address', 'Latitude')
         self.Longitude = IIQ.find_element(data, 'Address', 'Longitude')
         self.LocationTypeId = data.LocationTypeId
@@ -59,23 +63,28 @@ class Location(Base, IIQ):
 
     @staticmethod
     def get_data_request(page_number):
-        url = "https://" + config.IIQ_INSTANCE + "/api/V1.0/locations?$p=" + str(page_number) +"&$s=" + str(config.PAGE_SIZE)
+        url = "https://" + config.IIQ_INSTANCE + "/api/V1.0/locations?$p=" + str(
+            page_number) + "&$s=" + str(config.PAGE_SIZE)
 
-        payload={}
+        payload = {}
         headers = {
-        'Connection': 'keep-alive',
-        'Client': 'WebBrowser',
-        'Accept': 'application/json, text/plain, */*',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Dest': 'empty',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Authorization': 'Bearer ' + config.IIQ_TOKEN
+            'Connection': 'keep-alive',
+            'Client': 'WebBrowser',
+            'Accept': 'application/json, text/plain, */*',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        return requests.request("GET", url, headers=headers, data=payload, timeout=config.TIMEOUT)
+        return requests.request("GET",
+                                url,
+                                headers=headers,
+                                data=payload,
+                                timeout=config.TIMEOUT)
 
     @staticmethod
     def get_num_pages():

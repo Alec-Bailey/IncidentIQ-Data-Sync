@@ -16,6 +16,7 @@ from base import Base, IIQ_Datatype as IIQ
 from custom_fields import AssetCustomFields
 import config
 
+
 class Asset(Base, IIQ):
     """Asset is an instanciable class which holds all the information
     for one Asset in IncidentIQ. Asset also contains methods to make an
@@ -29,7 +30,8 @@ class Asset(Base, IIQ):
     __table_args__ = {'schema': config.SCHEMA}
 
     # Retrieve custom fields
-    custom_fields = AssetCustomFields.parse_fields(AssetCustomFields.get_fields_request(0))
+    custom_fields = AssetCustomFields.parse_fields(
+        AssetCustomFields.get_fields_request(0))
 
     AssetId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
     SiteId = Column(UNIQUEIDENTIFIER(binary=False))
@@ -49,14 +51,14 @@ class Asset(Base, IIQ):
     CanSubmitTicket = Column(Boolean)
     IsFavorite = Column(Boolean)
     ModelId = Column(UNIQUEIDENTIFIER(binary=False))
-    ModelName = Column(String(length=config.STRING_LENGTH)) # Nested
+    ModelName = Column(String(length=config.STRING_LENGTH))    # Nested
     OwnerId = Column(UNIQUEIDENTIFIER(binary=False))
-    OwnerName = Column(String(length=config.STRING_LENGTH)) # Nested
+    OwnerName = Column(String(length=config.STRING_LENGTH))    # Nested
     LocationId = Column(UNIQUEIDENTIFIER(binary=False))
-    LocationName = Column(String(length=config.STRING_LENGTH)) # Nested
+    LocationName = Column(String(length=config.STRING_LENGTH))    # Nested
     LocationDetails = Column(String(length=config.STRING_LENGTH))
     LocationRoomId = Column(UNIQUEIDENTIFIER(binary=False))
-    LocationRoomName = Column(String(length=config.STRING_LENGTH)) # Nested
+    LocationRoomName = Column(String(length=config.STRING_LENGTH))    # Nested
     Notes = Column(String(length=config.STRING_LENGTH))
     HasOpenTicket = Column(Boolean)
     OpenTicket = Column(Integer)
@@ -79,18 +81,20 @@ class Asset(Base, IIQ):
     StorageLocationId = Column(UNIQUEIDENTIFIER(binary=False))
     StorageLocationName = Column(String(length=config.STRING_LENGTH))
 
-    fields = ['AssetId', 'AssetTag', 'AssetTypeId', 'AssetTypeName', 
-    'CanOwnerManage', 'CanSubmitTicket', 'CreatedDate', 'DeployedDate',
-    'ExternalId', 'FundingSourceId', 'HasOpenTicket',
-    'InsuranceExpirationDate', 'InsuranceInfo', 'InvoiceNumber',
-    'IsDeleted', 'IsFavorite', 'IsReadOnly', 'IsTraining',
-    'LastInventoryDate', 'LocationDetails', 'LocationId', 'LocationName',
-    'LocationRoomId', 'LocationRoomName', 'ModelId', 'ModelName', 
-    'ModifiedDate', 'Name', 'Notes', 'OpenTicket', 'OwnerId', 'ProductId', 
-    'PurchasePoNumber', 'PurchasePrice', 'PurchasedDate', 'RetiredDate', 
-    'SerialNumber', 'SiteId', 'StatusTypeId', 'StorageLocationId', 
-    'StorageLocationName', 'StorageSlotNumber', 'StorageUnitNumber', 'Vendor',
-    'WarrantyExpirationDate', 'WarrantyInfo']
+    fields = [
+        'AssetId', 'AssetTag', 'AssetTypeId', 'AssetTypeName', 'CanOwnerManage',
+        'CanSubmitTicket', 'CreatedDate', 'DeployedDate', 'ExternalId',
+        'FundingSourceId', 'HasOpenTicket', 'InsuranceExpirationDate',
+        'InsuranceInfo', 'InvoiceNumber', 'IsDeleted', 'IsFavorite',
+        'IsReadOnly', 'IsTraining', 'LastInventoryDate', 'LocationDetails',
+        'LocationId', 'LocationName', 'LocationRoomId', 'LocationRoomName',
+        'ModelId', 'ModelName', 'ModifiedDate', 'Name', 'Notes', 'OpenTicket',
+        'OwnerId', 'ProductId', 'PurchasePoNumber', 'PurchasePrice',
+        'PurchasedDate', 'RetiredDate', 'SerialNumber', 'SiteId',
+        'StatusTypeId', 'StorageLocationId', 'StorageLocationName',
+        'StorageSlotNumber', 'StorageUnitNumber', 'Vendor',
+        'WarrantyExpirationDate', 'WarrantyInfo'
+    ]
 
     # Validator ensures empty strings are entered as null
     @validates(*fields)
@@ -104,7 +108,7 @@ class Asset(Base, IIQ):
             # For non-nested fields that exist at the first level of the JSON
             # we can use setattr to assign values, since the fields are
             # named exactly as they appear in the JSON. For example, an asset
-            # JSON response will have a field 'AssetId' at the base level of that item. 
+            # JSON response will have a field 'AssetId' at the base level of that item.
             # Thus, find_element can grab it simply by being passed 'AssetId'. By design,
             # the column is also named 'AssetId', so we can iterate simply and set these fields.
             setattr(self, field, IIQ.find_element(data, field))
@@ -120,23 +124,28 @@ class Asset(Base, IIQ):
 
     @staticmethod
     def get_data_request(page):
-        url = "https://" + config.IIQ_INSTANCE + "/api/v1.0/assets/?$p=" + str(page) + "&$s=" + config.PAGE_SIZE + "&$d=Ascending&$o=AssetTag"
+        url = "https://" + config.IIQ_INSTANCE + "/api/v1.0/assets/?$p=" + str(
+            page) + "&$s=" + config.PAGE_SIZE + "&$d=Ascending&$o=AssetTag"
 
         payload = "{\n    \"OnlyShowDeleted\": false,\n    \"Filters\": [\n        {\n            \"Facet\": \"AssetType\",\n            \"Id\": \"2a1561e5-34ff-4fcf-87de-2a146f0e1c01\"\n        }\n    ],\n    \"FilterByViewPermission\": true\n}"
         headers = {
-        'Connection': 'keep-alive',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
-        'Client': 'WebBrowser',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json, text/plain, */*',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'cors',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Authorization': 'Bearer ' + config.IIQ_TOKEN
+            'Connection': 'keep-alive',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+            'Client': 'WebBrowser',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json, text/plain, */*',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Authorization': 'Bearer ' + config.IIQ_TOKEN
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload, timeout=config.TIMEOUT)
+        response = requests.request("POST",
+                                    url,
+                                    headers=headers,
+                                    data=payload,
+                                    timeout=config.TIMEOUT)
         # Cause an exception if anything but success is returned
         if response.status_code != 200:
             print("ERROR: STATUS CODE NOT 200")

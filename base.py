@@ -20,11 +20,15 @@ from types import SimpleNamespace as Namespace
 import config
 
 # Create nescessary SqlAlchemy binds
-engine = sqlalchemy.create_engine(config.DB_CONNECTION_STRING, pool_size=int(config.THREADS), max_overflow=0, pool_timeout=120)
+engine = sqlalchemy.create_engine(config.DB_CONNECTION_STRING,
+                                  pool_size=int(config.THREADS),
+                                  max_overflow=0,
+                                  pool_timeout=120)
 # Create a scoped session for thread safety, attempting to commit multiple sessions
 # at once
 Session = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base()
+
 
 class IIQ_Datatype:
     """IIQ_Datatype is the base class from which all created
@@ -34,22 +38,23 @@ class IIQ_Datatype:
     """
 
     # Validator ensures empty strings are entered as null and
-    # strings never exceed the capacity imposed by multi-database support. 
-    # The smallest VARCHAR type we support is 4,000 characters due to 
+    # strings never exceed the capacity imposed by multi-database support.
+    # The smallest VARCHAR type we support is 4,000 characters due to
     # ORACLE DB. There is probably no good reason for any asset to have a
     # string this long in the database
     def validate_inserts(self, key, value):
         if isinstance(value, str) and value == '':
-            return None # Set empty string to None (Null in databases)
+            return None    # Set empty string to None (Null in databases)
         elif isinstance(value, str) and len(value) >= config.STRING_LENGTH:
-            return value[0:config.STRING_LENGTH -1] # Truncate the string
+            return value[0:config.STRING_LENGTH - 1]    # Truncate the string
         else:
             return value
 
-    # Given a page number, returns the entire page response from the API 
+    # Given a page number, returns the entire page response from the API
     @staticmethod
     def get_data_request(page_number):
-        raise NotImplementedError("__get_data_request API Request not implemented")
+        raise NotImplementedError(
+            "__get_data_request API Request not implemented")
 
     # Returns the number of pages the API has for the calling type
     @staticmethod
@@ -59,22 +64,22 @@ class IIQ_Datatype:
     # Safely Checks if the API response contains an element at the specified path.
     # Takes an unlimited number of arguments, each successive argument
     # corrosponding to a successive level of nesting in the returned JSON
-    # Eg. _lookup_api_contents(data, 'Address', 'Street1') 
+    # Eg. _lookup_api_contents(data, 'Address', 'Street1')
     # If data.Address.Street1 does exist, return the value. Otherwise
     # return None
     @staticmethod
-    def find_element(lookup_object : Namespace, *args):
+    def find_element(lookup_object: Namespace, *args):
         # Verify that the attribute exists at every level, moving
         # into the object as we find exising attributes
-        for i in range (0, len(args) -1):
+        for i in range(0, len(args) - 1):
             if hasattr(lookup_object, args[i]):
                 lookup_object = getattr(lookup_object, args[i])
             else:
                 return None
 
         # If the outer most attributes exist, return the value
-        if hasattr(lookup_object, args[len(args)-1]):
-            return getattr(lookup_object, args[len(args)-1])
+        if hasattr(lookup_object, args[len(args) - 1]):
+            return getattr(lookup_object, args[len(args) - 1])
         # Return None if the attribute does not exist
         return None
 
@@ -84,15 +89,17 @@ class IIQ_Datatype:
     def get_page(cls, page_number):
         iiq_classes = []
         # Retreive the API data from the calling class
-        response = cls.get_data_request(page_number) #TODO: there could be pagination here
+        response = cls.get_data_request(
+            page_number)    #TODO: there could be pagination here
 
         # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
         # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
-        response_types = response.json(object_hook = lambda d : Namespace(**d)).Items
-    
+        response_types = response.json(
+            object_hook=lambda d: Namespace(**d)).Items
+
         # Iterate over every returned elmeent in the response and instantiate
         # an instance of each respective class. Add that to a list so we can
-        # later add this to a session & commit it to the database via 
+        # later add this to a session & commit it to the database via
         # SqlAlchemy
         for item in response_types:
             # Instantiation of the specified class cls to represent one item
@@ -121,21 +128,22 @@ class IIQ_Datatype:
     @classmethod
     def _get_custom_fields(cls, item):
         if hasattr(cls, 'custom_fields') and hasattr(item, 'CustomFieldValues'):
-                
-                # A list of attributes to set in the form ['Name'] -> ['Value']
-                attributes = {}
-                returned_fields = item.CustomFieldValues # Nest into custom field values
 
-                # Iterate over every returned custom field for the object
-                # When a custom filed type id is in the defined custom_fields
-                # for the class, add it to the attributes dict [FieldName] -> [Value]
-                for f in returned_fields:
-                    if f.CustomFieldTypeId in cls.custom_fields:
-                        attributes[cls.custom_fields[f.CustomFieldTypeId]] = f.Value
-                # Create an object consisting of the datatype
-                Custom_Type = cls.get_custom_type()
-                new_custom = Custom_Type(getattr(item, Custom_Type.primarykey_name), cls.custom_fields, attributes)
+            # A list of attributes to set in the form ['Name'] -> ['Value']
+            attributes = {}
+            returned_fields = item.CustomFieldValues    # Nest into custom field values
 
-                return new_custom
+            # Iterate over every returned custom field for the object
+            # When a custom filed type id is in the defined custom_fields
+            # for the class, add it to the attributes dict [FieldName] -> [Value]
+            for f in returned_fields:
+                if f.CustomFieldTypeId in cls.custom_fields:
+                    attributes[cls.custom_fields[f.CustomFieldTypeId]] = f.Value
+            # Create an object consisting of the datatype
+            Custom_Type = cls.get_custom_type()
+            new_custom = Custom_Type(getattr(item, Custom_Type.primarykey_name),
+                                     cls.custom_fields, attributes)
+
+            return new_custom
         else:
             return None
