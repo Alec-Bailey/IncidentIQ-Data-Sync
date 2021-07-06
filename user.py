@@ -23,7 +23,7 @@ class User(Base, IIQ):
     API request to retreive an entire page of Users as well as
     create an instance of the dynamic UserCustomFields class.
     User is declaratively mapped in SqlAlchemy to the 'Users' table,
-    on instantiation Asset can be inserted into 'Users' via an SqlAlchemy
+    on instantiation User can be inserted into 'Users' via an SqlAlchemy
     session."""
 
     __tablename__ = config.USERS_TABLE_NAME
@@ -94,7 +94,6 @@ class User(Base, IIQ):
     def get_data_request(page):
         url = "http://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$s=" + str(
             config.PAGE_SIZE) + "&$d=Ascending&$p=" + str(page)
-        print(url)
         payload = {}
         files = {}
         headers = {
