@@ -1,7 +1,7 @@
 
 # Incident IQ Data Sync
 
-Incident IQ Data Sync is a tool that allows you to pull down all of IncidentIQ's data into a local database, regardless of your specific configuration or SQL database of choice.
+Incident IQ Data Sync is a dynamic, database agnostic tool which syncs all of IncidentIQ's data into a local database. Incident IQ Data Sync was designed to be performant, configurable and easily extended.
 
 Contents
 ========
@@ -17,11 +17,12 @@ Contents
 
 ## Why?
 ---
-Our district needed a tool that:
-+ Pulls different types of Incident IQ data (Assets, Users, Locations) into a local database
-+ Can dynamically create and update tables for changing custom fields
-+ Is configurable to run on changing infrastructure
-+ Is maintainable and extensible
+Our district needed a tool could:
++ Pull different types of Incident IQ data (Assets, Users, Locations) into a local database
++ Dynamically create and update tables for changing custom fields
++ Be configurable to run on changing infrastructure
++ Be maintainable and extensible
++ Be database agnostic for multiple use cases
 
 ## Installation
 ---
