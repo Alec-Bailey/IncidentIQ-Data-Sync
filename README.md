@@ -1,7 +1,6 @@
 
 # Incident IQ Data Sync
-![SocialImage](https://github.com/Alec-Bailey/IncidentIQ-Data-Sync/blob/master/images/social.png?raw=true "Social Image")
-Incident IQ Data Sync is a dynamic, database agnostic tool which syncs all of IncidentIQ's data into a local database. Incident IQ Data Sync was designed to be performant, configurable and easily extended.
+Incident IQ Data Sync is a dynamic, database agnostic tool which syncs all of IncidentIQ's data into a local database. Designed to be performant, configurable and easily extended.
 
 Contents
 ========
@@ -18,7 +17,7 @@ Contents
 ## Why?
 ---
 Our district needed a tool could:
-+ Pull different types of Incident IQ data (Assets, Users, Locations) into a local database
++ Pull different types of Incident IQ data (Assets, Users, Locations, etc.) into a local database
 + Dynamically create and update tables for changing custom fields
 + Be configurable to run on changing infrastructure
 + Be easily maintainable and extensible
@@ -42,7 +41,7 @@ Set up your database connection - see [Configuration](#configuration)
 *Note* some databases may require additional libraries on your system. It is up to you
 to configure your system correctly.
 
-### Postgres
+#### *Note for Postgres users*
 
 You may need to install libraries specific to Posgres, on Debian Based systems
 `sudo apt-get install libpq-dev python-dev`
@@ -58,7 +57,7 @@ Currently, we support:
  * [Oracle](https://www.oracle.com/database/technologies/)
  * ~~[MariaDB](https://mariadb.org/)~~ *Currently broken*
 
-Support may be added for any other database [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
+Support *may* be possible for other databases [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
 
 ### Configuring your database connection string
 To figure out how to write a connection string for your database see the [offical SqlAlchemy guide]( https://docs.sqlalchemy.org/en/14/core/engines.html).
@@ -85,7 +84,7 @@ ConnectionString: 'postgresql://azurediamond:hunter2@localhost/mydatabase'
 ### Configuring your IncidentIQ Instance
 **Instance**
 
-This is simple, your IncidentIQ instance is just the unique host URL your district uses to access IncidentIQ. Usually, this is of the format `domain.incidentiq.com`.
+Your IncidentIQ instance is just the unique host URL your district uses to access IncidentIQ. Usually, this is of the format `domain.incidentiq.com`.
 
 *For example* Chicago Public Schools might have the host URL `cps.incidentiq.com`
 
@@ -95,11 +94,11 @@ You must also create a bearer token within IncidentIQ. This is an authentication
 
 Navigate to ``Administration -> Developer Tools`` in the IncidentIQ webapp. Then chose a user from the drop down, and click `CREATE API TOKEN`.
 
-![create token](https://github.com/Alec-Bailey/IncidentIQ-Data-Sync/blob/master/images/create%20token.png "Create a bearer token")
+![create token](images/create%20token.png "Create a bearer token")
 
 A new API token will appear, copy this and add it to your config file under `Token`
 
-![generated token](https://github.com/Alec-Bailey/IncidentIQ-Data-Sync/blob/master/images/generated%20token.png "Generated bearer token")
+![generated token](images/generated%20token.png "Generated bearer token")
 
 Your configured IncidentIQ fields should look like this:
 
@@ -116,7 +115,7 @@ The following are optional parameters, explained more in-depth. The config file 
 **Schema**
 
 For Databases such as Microsoft SQL Server that do not treat Schema as a Database itself, Schema can be specified. A schema will *not* be created if it does not already exist.
-Additionally, if you are using a database like MySQL that does use shcema and database interchangeably, leave this blank.
+Additionally, if you are using a database like MySQL that does use schema and database interchangeably, leave this blank.
 
 In all other cases, if left blank, the default schema will be used.
 
