@@ -12,8 +12,8 @@ instantiated and inserted into a database with an SqlAlchemy Session.
 """
 
 from sqlalchemy import Column, String, Integer, Date, Table
-#from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
 from sqlalchemy_utils.types.uuid import UUIDType as UNIQUEIDENTIFIER
+from sqlalchemy.orm.mapper import validates
 from sqlalchemy.orm import mapper
 import requests
 from requests.models import HTTPError
@@ -27,6 +27,19 @@ import config
 # A custom fields metaclass which allows for the dynamic deffinition
 # of fields given the API response
 class IIQ_CustomFields(object):
+
+    # Validator ensures empty strings are entered as null and
+    # strings never exceed the capacity imposed by multi-database support.
+    # The smallest VARCHAR type we support is 4,000 characters due to
+    # ORACLE DB. There is probably no good reason for any asset to have a
+    # string this long in the database
+    def validate_inserts(self, value):
+        if isinstance(value, str) and value == '':
+            return None    # Set empty string to None (Null in databases)
+        elif isinstance(value, str) and len(value) >= config.STRING_LENGTH:
+            return value[0:config.STRING_LENGTH - 1]    # Truncate the string
+        else:
+            return value
 
     # Parse out all returned custom field types from the API
     # This should be the same for all types of custom fields
@@ -56,7 +69,10 @@ class IIQ_CustomFields(object):
 
         # For each field which is passed, set the corrosponding value
         for key in attributes:
-            setattr(self, key, attributes[key])
+            # Validator is called directly here, since we are using
+            # attribute mapping, and not declarative mapping for dynamic
+            # fields
+            setattr(self, key, self.validate_inserts(attributes[key]))
 
     # Create and map the custom field type table to the ORM.
     # After the creation of this table, the base class [Users/Assets/etc]CustomFields can
