@@ -26,7 +26,7 @@ import config
 
 class IIQ_CustomFields(object):
     # A custom fields metaclass which allows for the dynamic deffinition
-    # of fields given the API response 
+    # of fields given the API response
 
     # Validator ensures empty strings are entered as null and
     # strings never exceed the capacity imposed by multi-database support.
@@ -96,7 +96,7 @@ class IIQ_CustomFields(object):
 class UserCustomFields(IIQ_CustomFields):
     # UserCustomFields is a dynamicly created class which holds all custom
     # fields for the a User in IncidentIQ.
-    
+
     primarykey_name = 'UserId'
 
     @staticmethod
