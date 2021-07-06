@@ -21,8 +21,8 @@ Our district needed a tool could:
 + Pull different types of Incident IQ data (Assets, Users, Locations) into a local database
 + Dynamically create and update tables for changing custom fields
 + Be configurable to run on changing infrastructure
-+ Be maintainable and extensible
-+ Be database agnostic for multiple use cases
++ Be easily maintainable and extensible
++ Support common SQL databases
 
 ## Installation
 ---
