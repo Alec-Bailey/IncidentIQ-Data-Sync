@@ -54,6 +54,7 @@ def __sync_object(cls: IIQ_Datatype, index):
         raise e
 
 
+# Sync all of a specified type into the database
 def __execute_sync(IIQ_Type: IIQ_Datatype):
     # Pull all users down into database
     num_pages = IIQ_Type.get_num_pages()

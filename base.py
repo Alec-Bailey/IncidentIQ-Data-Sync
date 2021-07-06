@@ -98,7 +98,7 @@ class IIQ_Datatype:
             object_hook=lambda d: Namespace(**d)).Items
 
         # Iterate over every returned elmeent in the response and instantiate
-        # an instance of each respective class. Add that to a list so we can
+        # an instance of each respective class. Add the instance to a list so we can
         # later add this to a session & commit it to the database via
         # SqlAlchemy
         for item in response_types:
