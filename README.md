@@ -32,7 +32,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 pip install -r requirements.txt
 ```
 
-*Note* Some libraries included in requirements.txt are database specific, and can be removed for your use case.
+*Note* Some libraries included in requirements.txt are database specific, and can be removed for your use case. Not all libraries for your specific database connection may be included in requirements.txt, check error messages and use pip to install libraries as needed.
 
 Rename `config-sample.ini` to `config.ini`
 
