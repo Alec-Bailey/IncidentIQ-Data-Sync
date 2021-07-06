@@ -150,7 +150,9 @@ A slow connection to your database will also cause slower script execution.
 ## Contributing
 ---
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-Run all contributions through YAPF using the included style-config.ini ```yapf --style config-style.ini -i [filename].py```
+Run all contributions through YAPF using the included style-config.ini 
+
+```yapf --style config-style.ini -i [filename].py```
 
 ## License
 ---
