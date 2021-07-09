@@ -7,3 +7,6 @@ config-testing.ini
 config-prod.ini
 config-local.ini
 .idea/*
+dist/*
+build/*
+main.spec
