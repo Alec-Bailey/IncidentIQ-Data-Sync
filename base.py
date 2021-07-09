@@ -15,7 +15,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import Column, String, Integer, Date, Table
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
-from sqlalchemy.orm import mapper
+from sqlalchemy.orm import mapper # 'Unused' imports needed for pyinstaller
+from sqlalchemy.sql import default_comparator 
+from sqlalchemy.ext import baked
+from sqlalchemy.dialects.mysql import mysqldb
+import sqlalchemy
 from types import SimpleNamespace as Namespace
 import config
 
