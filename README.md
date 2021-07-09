@@ -16,7 +16,7 @@ Contents
 
 ## Why?
 ---
-Our district needed a tool could:
+Our district needed a tool that could:
 + Pull different types of Incident IQ data (Assets, Users, Locations, etc.) into a local database
 + Dynamically create and update tables for changing custom fields
 + Be configurable to run on changing infrastructure
@@ -55,7 +55,7 @@ Currently, we support:
  * [Postgres](https://www.postgresql.org/)
  * [MySql](https://www.mysql.com/)
  * [Oracle](https://www.oracle.com/database/technologies/)
- * ~~[MariaDB](https://mariadb.org/)~~ *Currently broken*
+ * [MariaDB](https://mariadb.org/) 
 
 Support *may* be possible for other databases [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
 
