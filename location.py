@@ -15,7 +15,8 @@ class Location(Base, IIQ):
     On instantiation Location can be inserted into 'Locations' via an SqlAlchemy
     session."""
     __tablename__ = config.LOCATIONS_TABLE_NAME
-    __table_args__ = {'schema': config.SCHEMA}
+    if config.SCHEMA is not None:
+        __table_args__ = {'schema': config.SCHEMA}
 
     LocationId = Column(UNIQUEIDENTIFIER(binary=False), primary_key=True)
     SiteId = Column(UNIQUEIDENTIFIER(binary=False))

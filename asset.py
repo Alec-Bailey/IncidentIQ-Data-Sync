@@ -27,7 +27,8 @@ class Asset(Base, IIQ):
     session."""
 
     __tablename__ = config.ASSETS_TABLE_NAME
-    __table_args__ = {'schema': config.SCHEMA}
+    if config.SCHEMA is not None:
+        __table_args__ = {'schema': config.SCHEMA}
 
     # Retrieve custom fields
     custom_fields = AssetCustomFields.parse_fields(

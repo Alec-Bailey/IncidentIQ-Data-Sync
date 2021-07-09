@@ -27,7 +27,8 @@ class User(Base, IIQ):
     session."""
 
     __tablename__ = config.USERS_TABLE_NAME
-    __table_args__ = {'schema': config.SCHEMA}
+    if config.SCHEMA is not None:
+        __table_args__ = {'schema': config.SCHEMA}
 
     # Retreive custom fields
     custom_fields = UserCustomFields.parse_fields(
