@@ -1,6 +1,6 @@
 
 # Incident IQ Data Sync
-Incident IQ Data Sync is a dynamic, database agnostic tool which syncs all of IncidentIQ's data into a local database. Designed to be performant, configurable and easily extended.
+Incident IQ Data Sync is a dynamic, database agnostic tool which syncs all of IncidentIQ's data into a local database. Designed to be performant, multithreaded, configurable and easily extended.
 
 Contents
 ========
