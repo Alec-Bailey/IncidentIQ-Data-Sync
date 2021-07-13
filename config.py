@@ -13,7 +13,10 @@ cf.read('config.ini')
 
 # Local Database for backup
 DB_CONNECTION_STRING = cf.get('Database', 'ConnectionString')
-SCHEMA = cf.get('Database', 'Schema') if len(cf.get('Database', 'Schema').strip()) > 0 else None  # Assign to none if schema is blank 
+SCHEMA = cf.get(
+    'Database', 'Schema') if len(cf.get(
+        'Database',
+        'Schema').strip()) > 0 else None    # Assign to none if schema is blank
 STRING_LENGTH = int(cf.get('Database', 'StringLength'))
 # Table Names
 ASSETS_TABLE_NAME = cf.get('Tables', 'Assets')
