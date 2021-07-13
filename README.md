@@ -6,11 +6,11 @@ Contents
 ========
 
  * [Why?](#why)
+ * [What databases are supported?](#supported-databases)
  * [Installation](#installation)
+ * [Configuration](#configuration)
  * [Usage](#usage)
  * [What can I sync?](#what-can-i-sync)
- * [What databases are supported?](#supported-databases)
- * [Configuration](#configuration)
  * [Contributing](#contributing)
  * [License](#license)
 
@@ -22,6 +22,17 @@ Our district needed a tool that could:
 + Be configurable to run on changing infrastructure
 + Be easily maintainable and extensible
 + Support common SQL databases
+
+## Supported Databases
+---
+Currently, support has been tested for:
+ * [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server)
+ * [Postgres](https://www.postgresql.org/)
+ * [MySql](https://www.mysql.com/)
+ * [Oracle](https://www.oracle.com/database/technologies/)
+ * [MariaDB](https://mariadb.org/) 
+
+Support *may* be possible for other database dialects [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
 
 ## Installation
 ---
@@ -49,16 +60,6 @@ You may need to install libraries specific to Posgres, on Debian Based systems
 
 ## Configuration
 ---
-### Supported Databases
-Currently, support has been tested for:
- * [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server)
- * [Postgres](https://www.postgresql.org/)
- * [MySql](https://www.mysql.com/)
- * [Oracle](https://www.oracle.com/database/technologies/)
- * [MariaDB](https://mariadb.org/) 
-
-Support *may* be possible for other database dialects [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
-
 ### Configuring your database connection string
 To figure out how to write a connection string for your database see the [offical SqlAlchemy guide]( https://docs.sqlalchemy.org/en/14/core/engines.html).
 
