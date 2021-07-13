@@ -32,7 +32,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 pip install -r requirements.txt
 ```
 
-*Note* Some libraries included in requirements.txt are database specific, and can be removed for your use case. Not all libraries for your specific database connection may be included in requirements.txt, check error messages and use pip to install libraries as needed.
+*Note* Some libraries included in requirements.txt are database specific, and can be removed for your use case. Not all libraries for your specific database connection may be included in requirements.txt, check error messages and use pip to install libraries as needed. [The SqlAlchemy documentation](https://docs.sqlalchemy.org/en/14/core/engines.html) for setting up your connection string specifies the library used for that specific connection.
 
 Rename `config-sample.ini` to `config.ini`
 
@@ -50,14 +50,14 @@ You may need to install libraries specific to Posgres, on Debian Based systems
 ## Configuration
 ---
 ### Supported Databases
-Currently, we support:
+Currently, support has been tested for:
  * [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server)
  * [Postgres](https://www.postgresql.org/)
  * [MySql](https://www.mysql.com/)
  * [Oracle](https://www.oracle.com/database/technologies/)
  * [MariaDB](https://mariadb.org/) 
 
-Support *may* be possible for other databases [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
+Support *may* be possible for other database dialects [supported by SqlAlchemy](https://docs.sqlalchemy.org/en/14/dialects/). If you need support for an unsupported database create an issue, or see [Contributing](#contributing) and try it yourself!
 
 ### Configuring your database connection string
 To figure out how to write a connection string for your database see the [offical SqlAlchemy guide]( https://docs.sqlalchemy.org/en/14/core/engines.html).
@@ -72,7 +72,7 @@ The example in `config-sample.ini` is a connection string for an Microsoft Sql S
 
 `mssql+pyodbc://myDatabase.something.local/Inventory?driver=SQL+Server+Native+Client+11.0`
 
-Every database and network is different, **please refer to the official documentation.**
+Every database and network is different, **please refer to the [official documentation.](https://docs.sqlalchemy.org/en/14/core/engines.html)**
 
 Your configured database connection string should look like this:
 ```
@@ -81,7 +81,7 @@ ConnectionString: 'postgresql://azurediamond:hunter2@localhost/mydatabase'
 ```
 ---
 
-### Configuring your IncidentIQ Instance
+### Configuring the IncidentIQ API
 **Instance**
 
 Your IncidentIQ instance is just the unique host URL your district uses to access IncidentIQ. Usually, this is of the format `domain.incidentiq.com`.
@@ -109,15 +109,41 @@ Token: fewig23823g98h(*Hg203g92gjaglakjewjg8ag9w38gfhy9g3pg8y29ghig101--t--_)(EF
 ```
 
 ### Optional Parameters
-The following are optional parameters, explained more in-depth. The config file is also commented, explaing what each of these do.
+The following are optional parameters, explained more in-depth.
 
 
-**Schema**
-
-For Databases such as Microsoft SQL Server that do not treat Schema as a Database itself, Schema can be specified. A schema will *not* be created if it does not already exist.
-Additionally, if you are using a database like MySQL that does use schema and database interchangeably, leave this blank.
-
+**Schema** for Databases such as Microsoft SQL Server that do not treat Schema as a Database itself, Schema can be specified. A schema will *not* be created if it does not already exist.
+Additionally, if you are using a database like MySQL that does use schema and database interchangeably, leave this blank and specifcy your database in the connection string.
 In all other cases, if left blank, the default schema will be used.
+Defaults to blank.
+
+**StringLength**
+sets the longest allowable string or string-like type (varchar or similar). Tables will be created with types of this length. Any strings longer which exist in a field will be truncated. Defaults to 512.
+
+**[Tables]** set the name of any given table as it will be created in your database. Defaults to the given name.
+
+**PageSize**
+is the number of elements to request in each call to the API.
+This can be tuned down for low memory machines (slower)
+or up for servers which can handle the load (faster). Currently this
+defaults to the IIQ maximum, 1000, a reasonable size on most machines.
+***Do not set higher than 1000*** or unexpected results will occur. *As of July 2021 the request to retrieve Users cannot handle more than 1000 elements per page. Due to a lack of documentation, we do not know whether or not this is by design or if it will change in the future.*
+
+**Threads**
+specifies the maximum number of worker threads at a time.
+Smaller will use less memory & peak CPU usage at a given time.
+However, lowering this very negatively impacts performance
+as the majority of execution time is spent waiting on the
+IIQ API to return data. Allowing all threads to request data
+at once is much faster. *Be aware that rate limits are not well defined for the IncidentIQ API, so turning this up to infinity may result in intermittent errors*.
+Your database may also have a connection limit that is worth
+considering, as each thread makes its own database connection.
+If you are seeing the error "The specified network name is no longer available" this probably means there are too many threads running for the DB. Defaults to 30.
+
+**Timeout**
+sets the time in seconds each request to the IncidentIQ API is allowed
+to wait before an error is thrown. Setting this higher may be nescessary
+on slow machines, or slow network connections. Defaults to 100.
 
 
 ## Usage
