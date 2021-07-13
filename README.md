@@ -179,7 +179,7 @@ A slow connection to your database will also cause slower script execution.
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 Run all contributions through [YAPF](https://github.com/google/yapf/) using the included style-config.ini 
 
-```yapf --style config-style.ini -i [filename].py```
+```yapf --style style-config.ini -i [filename].py```
 
 ## License
 ---
