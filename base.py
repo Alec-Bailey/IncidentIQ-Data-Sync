@@ -15,8 +15,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import Column, String, Integer, Date, Table
 from sqlalchemy.dialects.mssql import UNIQUEIDENTIFIER
-from sqlalchemy.orm import mapper # 'Unused' imports needed for pyinstaller
-from sqlalchemy.sql import default_comparator 
+from sqlalchemy.orm import mapper    # 'Unused' imports needed for pyinstaller
+from sqlalchemy.sql import default_comparator
 from sqlalchemy.ext import baked
 from sqlalchemy.dialects.mysql import mysqldb
 import sqlalchemy
@@ -93,8 +93,7 @@ class IIQ_Datatype:
     def get_page(cls, page_number):
         iiq_classes = []
         # Retreive the API data from the calling class
-        response = cls.get_data_request(
-            page_number)    #TODO: there could be pagination here
+        response = cls.get_data_request(page_number)
 
         # Namespace hack of the response, nicely puts JSON data into objects so fields can be accessed
         # in the form user.Name user.LocationId etc etc intead of lame indexing Eg user['Name']
