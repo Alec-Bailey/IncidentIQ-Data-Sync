@@ -55,6 +55,7 @@ class Asset(Base, IIQ):
     ModelName = Column(String(length=config.STRING_LENGTH))    # Nested
     OwnerId = Column(UNIQUEIDENTIFIER(binary=False))
     OwnerName = Column(String(length=config.STRING_LENGTH))    # Nested
+    OwnerUsername = Column(String(length=config.STRING_LENGTH)) # Nested
     LocationId = Column(UNIQUEIDENTIFIER(binary=False))
     LocationName = Column(String(length=config.STRING_LENGTH))    # Nested
     LocationDetails = Column(String(length=config.STRING_LENGTH))
@@ -90,8 +91,8 @@ class Asset(Base, IIQ):
         'IsReadOnly', 'IsTraining', 'LastInventoryDate', 'LocationDetails',
         'LocationId', 'LocationName', 'LocationRoomId', 'LocationRoomName',
         'ModelId', 'ModelName', 'ModifiedDate', 'Name', 'Notes', 'OpenTicket',
-        'OwnerId', 'ProductId', 'PurchasePoNumber', 'PurchasePrice',
-        'PurchasedDate', 'RetiredDate', 'SerialNumber', 'SiteId',
+        'OwnerId', 'OwnerName', 'OwnerUsername', 'ProductId', 'PurchasePoNumber', 
+        'PurchasePrice', 'PurchasedDate', 'RetiredDate', 'SerialNumber', 'SiteId',
         'StatusTypeId', 'StorageLocationId', 'StorageLocationName',
         'StorageSlotNumber', 'StorageUnitNumber', 'Vendor',
         'WarrantyExpirationDate', 'WarrantyInfo'
@@ -120,6 +121,7 @@ class Asset(Base, IIQ):
         # end users. This is harmless since find_element will set them to None by default
         self.ModelName = IIQ.find_element(data, 'Model', 'Name')
         self.OwnerName = IIQ.find_element(data, 'Owner', 'Name')
+        self.OwnerUsername = IIQ.find_element(data, 'Owner', 'Username')
         self.LocationName = IIQ.find_element(data, 'Location', 'Name')
         self.LocationRoomName = IIQ.find_element(data, 'LocationRoom', 'Name')
 
