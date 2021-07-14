@@ -55,7 +55,7 @@ class Asset(Base, IIQ):
     ModelName = Column(String(length=config.STRING_LENGTH))    # Nested
     OwnerId = Column(UNIQUEIDENTIFIER(binary=False))
     OwnerName = Column(String(length=config.STRING_LENGTH))    # Nested
-    OwnerUsername = Column(String(length=config.STRING_LENGTH)) # Nested
+    OwnerUsername = Column(String(length=config.STRING_LENGTH))    # Nested
     LocationId = Column(UNIQUEIDENTIFIER(binary=False))
     LocationName = Column(String(length=config.STRING_LENGTH))    # Nested
     LocationDetails = Column(String(length=config.STRING_LENGTH))
@@ -91,11 +91,11 @@ class Asset(Base, IIQ):
         'IsReadOnly', 'IsTraining', 'LastInventoryDate', 'LocationDetails',
         'LocationId', 'LocationName', 'LocationRoomId', 'LocationRoomName',
         'ModelId', 'ModelName', 'ModifiedDate', 'Name', 'Notes', 'OpenTicket',
-        'OwnerId', 'OwnerName', 'OwnerUsername', 'ProductId', 'PurchasePoNumber', 
-        'PurchasePrice', 'PurchasedDate', 'RetiredDate', 'SerialNumber', 'SiteId',
-        'StatusTypeId', 'StorageLocationId', 'StorageLocationName',
-        'StorageSlotNumber', 'StorageUnitNumber', 'Vendor',
-        'WarrantyExpirationDate', 'WarrantyInfo'
+        'OwnerId', 'OwnerName', 'OwnerUsername', 'ProductId',
+        'PurchasePoNumber', 'PurchasePrice', 'PurchasedDate', 'RetiredDate',
+        'SerialNumber', 'SiteId', 'StatusTypeId', 'StorageLocationId',
+        'StorageLocationName', 'StorageSlotNumber', 'StorageUnitNumber',
+        'Vendor', 'WarrantyExpirationDate', 'WarrantyInfo'
     ]
 
     # Validator ensures empty strings are entered as null
