@@ -53,6 +53,8 @@ class Asset(Base, IIQ):
     IsFavorite = Column(Boolean)
     ModelId = Column(UNIQUEIDENTIFIER(binary=False))
     ModelName = Column(String(length=config.STRING_LENGTH))    # Nested
+    CategoryId = Column(UNIQUEIDENTIFIER(binary=False))    # Nested
+    CategoryName = Column(String(length=config.STRING_LENGTH))    # Nested
     OwnerId = Column(UNIQUEIDENTIFIER(binary=False))
     OwnerName = Column(String(length=config.STRING_LENGTH))    # Nested
     OwnerUsername = Column(String(length=config.STRING_LENGTH))    # Nested
@@ -90,12 +92,12 @@ class Asset(Base, IIQ):
         'InsuranceInfo', 'InvoiceNumber', 'IsDeleted', 'IsFavorite',
         'IsReadOnly', 'IsTraining', 'LastInventoryDate', 'LocationDetails',
         'LocationId', 'LocationName', 'LocationRoomId', 'LocationRoomName',
-        'ModelId', 'ModelName', 'ModifiedDate', 'Name', 'Notes', 'OpenTicket',
-        'OwnerId', 'OwnerName', 'OwnerUsername', 'ProductId',
-        'PurchasePoNumber', 'PurchasePrice', 'PurchasedDate', 'RetiredDate',
-        'SerialNumber', 'SiteId', 'StatusTypeId', 'StorageLocationId',
-        'StorageLocationName', 'StorageSlotNumber', 'StorageUnitNumber',
-        'Vendor', 'WarrantyExpirationDate', 'WarrantyInfo'
+        'ModelId', 'ModelName', 'ModifiedDate', 'CategoryName', 'CategoryId',
+        'Name', 'Notes', 'OpenTicket', 'OwnerId', 'OwnerName', 'OwnerUsername',
+        'ProductId', 'PurchasePoNumber', 'PurchasePrice', 'PurchasedDate',
+        'RetiredDate', 'SerialNumber', 'SiteId', 'StatusTypeId',
+        'StorageLocationId', 'StorageLocationName', 'StorageSlotNumber',
+        'StorageUnitNumber', 'Vendor', 'WarrantyExpirationDate', 'WarrantyInfo'
     ]
 
     # Validator ensures empty strings are entered as null
@@ -120,6 +122,8 @@ class Asset(Base, IIQ):
         # often they are purposeful inclusions that aren't nescessary but useful to
         # end users. This is harmless since find_element will set them to None by default
         self.ModelName = IIQ.find_element(data, 'Model', 'Name')
+        self.CategoryId = IIQ.find_element(data, 'Model', 'CategoryId')
+        self.CategoryName = IIQ.find_element(data, 'Model', 'Category', 'Name')
         self.OwnerName = IIQ.find_element(data, 'Owner', 'Name')
         self.OwnerUsername = IIQ.find_element(data, 'Owner', 'Username')
         self.LocationName = IIQ.find_element(data, 'Location', 'Name')
