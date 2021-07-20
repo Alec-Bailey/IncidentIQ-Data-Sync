@@ -44,6 +44,7 @@ class Asset(Base, IIQ):
     IsDeleted = Column(Boolean)
     IsTraining = Column(Boolean)
     StatusTypeId = Column(UNIQUEIDENTIFIER(binary=False))
+    StatusName = Column(String(length=config.STRING_LENGTH)) # Nested
     AssetTag = Column(String(length=config.STRING_LENGTH))
     SerialNumber = Column(String(length=config.STRING_LENGTH))
     ExternalId = Column(String(length=config.STRING_LENGTH))
@@ -95,7 +96,7 @@ class Asset(Base, IIQ):
         'ModelId', 'ModelName', 'ModifiedDate', 'CategoryName', 'CategoryId',
         'Name', 'Notes', 'OpenTicket', 'OwnerId', 'OwnerName', 'OwnerUsername',
         'ProductId', 'PurchasePoNumber', 'PurchasePrice', 'PurchasedDate',
-        'RetiredDate', 'SerialNumber', 'SiteId', 'StatusTypeId',
+        'RetiredDate', 'SerialNumber', 'SiteId', 'StatusName', 'StatusTypeId',
         'StorageLocationId', 'StorageLocationName', 'StorageSlotNumber',
         'StorageUnitNumber', 'Vendor', 'WarrantyExpirationDate', 'WarrantyInfo'
     ]
@@ -121,6 +122,7 @@ class Asset(Base, IIQ):
         # as Nested. We simply path these out by hand since there are only a few, and
         # often they are purposeful inclusions that aren't nescessary but useful to
         # end users. This is harmless since find_element will set them to None by default
+        self.StatusName = IIQ.find_element(data, 'Status', 'Name')
         self.ModelName = IIQ.find_element(data, 'Model', 'Name')
         self.CategoryId = IIQ.find_element(data, 'Model', 'CategoryId')
         self.CategoryName = IIQ.find_element(data, 'Model', 'Category', 'Name')
