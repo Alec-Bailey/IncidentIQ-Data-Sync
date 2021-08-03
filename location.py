@@ -28,6 +28,7 @@ class Location(Base, IIQ):
     Street1 = Column(String(length=config.STRING_LENGTH))
     Street2 = Column(String(length=config.STRING_LENGTH))
     City = Column(String(length=config.STRING_LENGTH))
+    State = Column(String(length=config.STRING_LENGTH))
     Zip = Column(String(length=config.STRING_LENGTH))
     Country = Column(String(length=config.STRING_LENGTH))
     Latitude = Column(Numeric)
@@ -38,8 +39,9 @@ class Location(Base, IIQ):
 
     fields = [
         'LocationId', 'SiteId', 'Name', 'Abbreviation', 'CreatedDate',
-        'ModifiedDate', 'AddressId', 'Street1', 'Street2', 'City', 'Zip',
-        'Country', 'Latitude', 'Longitude', 'LocationTypeId', 'LocationType'
+        'ModifiedDate', 'AddressId', 'Street1', 'Street2', 'City', 'State', 
+        'Zip', 'Country', 'Latitude', 'Longitude', 'LocationTypeId',
+        'LocationType'
     ]
 
     @validates(*fields)
@@ -61,6 +63,7 @@ class Location(Base, IIQ):
         self.Street1 = IIQ.find_element(data, 'Address', 'Street1')
         self.Street2 = IIQ.find_element(data, 'Address', 'Street2')
         self.City = IIQ.find_element(data, 'Address', 'City')
+        self.State = IIQ.find_element(data, 'Address', 'State')
         self.Zip = IIQ.find_element(data, 'Address', 'Zip')
         self.Country = IIQ.find_element(data, 'Address', 'Country')
         self.Latitude = IIQ.find_element(data, 'Address', 'Latitude')
