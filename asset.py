@@ -22,8 +22,9 @@ class Asset(Base, IIQ):
     for one Asset in IncidentIQ. Asset also contains methods to make an
     API request to retreive an entire page of Assets as well as
     create an instance of the dynamic AssetCustomFields class.
-    Asset is declaratively mapped in SqlAlchemy to the 'Assets' table,
-    on instantiation Asset can be inserted into 'Assets' via an SqlAlchemy
+    Asset is declaratively mapped in SqlAlchemy to the 'Assets' table 
+    (by default, differs by configurable table names).
+    On instantiation, Asset can be inserted into 'Assets' via an SqlAlchemy
     session."""
 
     __tablename__ = config.ASSETS_TABLE_NAME
@@ -86,6 +87,8 @@ class Asset(Base, IIQ):
     StorageLocationId = Column(UNIQUEIDENTIFIER(binary=False))
     StorageLocationName = Column(String(length=config.STRING_LENGTH))
 
+    # List of fields allows insertion via setattr() easily, as well as
+    # validation without needless code
     fields = [
         'AssetId', 'AssetTag', 'AssetTypeId', 'AssetTypeName', 'CanOwnerManage',
         'CanSubmitTicket', 'CreatedDate', 'DeployedDate', 'ExternalId',
@@ -112,16 +115,18 @@ class Asset(Base, IIQ):
         for field in self.fields:
             # For non-nested fields that exist at the first level of the JSON
             # we can use setattr to assign values, since the fields are
-            # named exactly as they appear in the JSON. For example, an asset
-            # JSON response will have a field 'AssetId' at the base level of that item.
-            # Thus, find_element can grab it simply by being passed 'AssetId'. By design,
-            # the column is also named 'AssetId', so we can iterate simply and set these fields.
+            # named exactly as they appear in the JSON. Convention over configuration
+            # wins here. For example, an asset JSON response will have a field 'AssetId'
+            # at the base level of that item. Thus, find_element can grab it simply by being
+            # passed 'AssetId'. By design, the column is also named 'AssetId', so we can
+            # iterate simply and set these fields.
             setattr(self, field, IIQ.find_element(data, field))
 
-        # Nested fields are more complex, and thus are notated in the declaration
+        # Nested fields are more complex, and thus are commented in the declaration
         # as Nested. We simply path these out by hand since there are only a few, and
         # often they are purposeful inclusions that aren't nescessary but useful to
-        # end users. This is harmless since find_element will set them to None by default
+        # end users. This is harmless even if they are optional fields in the API response,
+        # since find_element will set them to None by default
         self.StatusName = IIQ.find_element(data, 'Status', 'Name')
         self.ModelName = IIQ.find_element(data, 'Model', 'Name')
         self.CategoryId = IIQ.find_element(data, 'Model', 'CategoryId')
