@@ -56,15 +56,14 @@ def __sync_object(cls: IIQ_Datatype, index):
 
 # Sync all of a specified type into the database
 def __execute_sync(IIQ_Type: IIQ_Datatype):
-    # Pull all users down into database
+    # Retrieve the number of pages the passed type has in IncidentIQ
     num_pages = IIQ_Type.get_num_pages()
 
     # Create a thread pool with config.THREADS number of threads. This calls __sync_object
     # for each page of the API we wish to request, from page 0 to num_pages. Each thread
     # is responsible for adding exactly one page of the API response (by default 1000 objects)
     # to it's session and commiting the data to the database. Threads then exit, making room
-    # for another thread to fetch and operate on the next page if config.THREADS is less than
-    # num_pages.
+    # for another thread to fetch and operate on the next page for as many pages as are present
     with concurrent.futures.ThreadPoolExecutor(
             max_workers=int(config.THREADS)) as executor:
         thread = {
@@ -81,7 +80,7 @@ if __name__ == '__main__':
     # Generate database schema from SqlAlchemy
     Base.metadata.create_all(engine)
 
-    # Execute the Users sync
+    # Execute the sync for all types
     __execute_sync(User)
     __execute_sync(Location)
     __execute_sync(Asset)
