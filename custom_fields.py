@@ -25,14 +25,15 @@ import config
 
 
 class IIQ_CustomFields(object):
-    # A custom fields metaclass which allows for the dynamic deffinition
+    # A custom fields class which allows for the dynamic deffinition
     # of fields given the API response
 
     # Validator ensures empty strings are entered as null and
     # strings never exceed the capacity imposed by multi-database support.
     # The smallest VARCHAR type we support is 4,000 characters due to
     # ORACLE DB. There is probably no good reason for any asset to have a
-    # string this long in the database
+    # string this long in the database. Strings longer than 4,000 characters
+    # are truncated.
     def validate_inserts(self, value):
         if isinstance(value, str) and value == '':
             return None    # Set empty string to None (Null in databases)
@@ -59,11 +60,10 @@ class IIQ_CustomFields(object):
     # Set all passed in attributes as fields of the class
     def __init__(self, primarykey_name, primarykey_id, custom_fields,
                  attributes):
-
         # Set the primary key
         setattr(self, primarykey_name, primarykey_id)
 
-        # Set all fields to None so there exists a value for all
+        # Set all fields to None so there exists a default value
         for field in custom_fields.values():
             setattr(self, field, None)
 
@@ -96,7 +96,6 @@ class IIQ_CustomFields(object):
 class UserCustomFields(IIQ_CustomFields):
     # UserCustomFields is a dynamicly created class which holds all custom
     # fields for the a User in IncidentIQ.
-
     primarykey_name = 'UserId'
 
     @staticmethod
@@ -135,7 +134,6 @@ class UserCustomFields(IIQ_CustomFields):
 class AssetCustomFields(IIQ_CustomFields):
     # AssetCustomFields is a dynamically created class which holds all custom
     # fields for an Asset in IncidentIQ
-
     primarykey_name = 'AssetId'
 
     def get_fields_request(page_number):
