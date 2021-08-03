@@ -23,7 +23,8 @@ class User(Base, IIQ):
     API request to retreive an entire page of Users as well as
     create an instance of the dynamic UserCustomFields class.
     User is declaratively mapped in SqlAlchemy to the 'Users' table,
-    on instantiation User can be inserted into 'Users' via an SqlAlchemy
+    (by default, differs by configurable table names).
+    On instantiation, User can be inserted into 'Users' via an SqlAlchemy
     session."""
 
     __tablename__ = config.USERS_TABLE_NAME
