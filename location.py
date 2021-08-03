@@ -11,7 +11,8 @@ class Location(Base, IIQ):
     """Location is an instanciable class which holds all the information
     for one Location in IncidentIQ. Location also contains methods to make an
     API request to retreive an entire page of Locations. Location is declaratively 
-    mapped in SqlAlchemy to the 'Locations' table by default.
+    mapped in SqlAlchemy to the 'Locations' table.
+    (by default, differs by configurable table names).
     On instantiation Location can be inserted into 'Locations' via an SqlAlchemy
     session."""
     __tablename__ = config.LOCATIONS_TABLE_NAME
