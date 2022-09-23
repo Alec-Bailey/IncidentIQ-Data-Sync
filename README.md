@@ -54,7 +54,7 @@ to configure your system correctly.
 
 #### *Note for Postgres users*
 
-You may need to install libraries specific to Posgres, on Debian Based systems
+You may need to install libraries specific to Postgres, on Debian Based systems
 `sudo apt-get install libpq-dev python-dev`
 
 
