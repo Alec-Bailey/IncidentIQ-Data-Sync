@@ -15,7 +15,9 @@ from base import Session, engine, Base, IIQ_Datatype
 from user import User
 from location import Location
 from asset import Asset
-from custom_fields import UserCustomFields, AssetCustomFields
+from ticket import Ticket
+from room import Room
+from custom_fields import UserCustomFields, AssetCustomFields, TicketCustomFields
 import config
 
 __author__ = "Alec Bailey"
@@ -31,6 +33,7 @@ __status__ = "Development"
 def __generate_custom_fields_tables():
     UserCustomFields.create_table(config.USERS_CF_TABLE_NAME, 'UserId')
     AssetCustomFields.create_table(config.ASSETS_CF_TABLE_NAME, 'AssetId')
+    TicketCustomFields.create_table(config.TICKETS_CF_TABLE_NAME, 'TicketId')
 
 
 # One unit of work, executed by a thread. Creates a session and preforms a web
@@ -81,9 +84,11 @@ if __name__ == '__main__':
     Base.metadata.create_all(engine)
 
     # Execute the sync for all types
+    __execute_sync(Ticket)
     __execute_sync(User)
     __execute_sync(Location)
     __execute_sync(Asset)
+    __execute_sync(Room)
 
     # Useful for testing without threading issues
     #num_pages = Asset.get_num_pages()

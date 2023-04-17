@@ -1,9 +1,9 @@
 certifi==2021.5.30
 chardet==4.0.0
 configparser==5.0.2
-greenlet==1.1.0
+greenlet==2.0.2
 idna==2.10
-pyodbc==4.0.30
+pyodbc==4.0.38
 requests==2.25.1
 six==1.16.0
 SQLAlchemy==1.4.20
