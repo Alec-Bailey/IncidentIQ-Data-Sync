@@ -55,7 +55,9 @@ class Ticket(Base, IIQ):
     IssueId = Column(UNIQUEIDENTIFIER(binary=False))
     IssueName = Column(String(length=config.STRING_LENGTH))    # Nested
     IsIssueConfirmed = Column(Boolean)
-    AssignedToUserId = Column(UNIQUEIDENTIFIER(binary=False))
+    TeamId = Column(UNIQUEIDENTIFIER(binary=False))
+    TeamName = Column(String(length=config.STRING_LENGTH))    # Nested
+    AssignedToUserId = Column(UNIQUEIDENTIFIER(binary=False))    # Nested
     AssignedToUserName = Column(String(length=config.STRING_LENGTH))    # Nested
     IsClosed = Column(Boolean)
     WorkflowStepId = Column(UNIQUEIDENTIFIER(binary=False))
@@ -69,7 +71,8 @@ class Ticket(Base, IIQ):
         'IsPastDue', 'OwnerId', 'ForId', 'IssueId', 'IsIssueConfirmed',
         'IsDeleted', 'AssignedToUserId', 'IsClosed', 'WorkflowStepId',
         'LocationId', 'LocationName', 'ModifiedDate', 'SiteId', 'UserId',
-        'Username', 'Priority', 'Subject', 'IssueDescription', 'Status'
+        'Username', 'Priority', 'Subject', 'IssueDescription', 'Status',
+        'TeamId', 'TeamName'
     ]
 
     # Validator ensures empty strings are entered as null
@@ -101,6 +104,8 @@ class Ticket(Base, IIQ):
         self.AssignedToUserName = IIQ.find_element(data, 'AssignedToUser',
                                                    'Name')
         self.Status = IIQ.find_element(data, 'WorkflowStep', 'StepName')
+        self.TeamId = IIQ.find_element(data, 'AssignedToTeam', 'TeamId')
+        self.TeamName = IIQ.find_element(data, 'AssignedToTeam', 'TeamName')
 
     @staticmethod
     def get_data_request(page):

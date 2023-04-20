@@ -17,6 +17,7 @@ from location import Location
 from asset import Asset
 from ticket import Ticket
 from room import Room
+from team import Team
 from custom_fields import UserCustomFields, AssetCustomFields, TicketCustomFields
 import config
 
@@ -84,6 +85,7 @@ if __name__ == '__main__':
     Base.metadata.create_all(engine)
 
     # Execute the sync for all types
+    __execute_sync(Team)
     __execute_sync(Ticket)
     __execute_sync(User)
     __execute_sync(Location)
