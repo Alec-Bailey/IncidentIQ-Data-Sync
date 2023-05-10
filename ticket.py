@@ -15,6 +15,8 @@ from base import Base, IIQ_Datatype as IIQ
 from custom_fields import TicketCustomFields
 import config
 import requests
+import uuid
+import json
 
 
 class Ticket(Base, IIQ):
@@ -101,17 +103,15 @@ class Ticket(Base, IIQ):
         self.ForName = IIQ.find_element(data, 'For', 'Name')
         self.LocationName = IIQ.find_element(data, 'Location', 'Name')
         self.IssueName = IIQ.find_element(data, 'Issue', 'Name')
-        self.AssignedToUserName = IIQ.find_element(data, 'AssignedToUser',
-                                                   'Name')
+        self.AssignedToUserName = IIQ.find_element(data, 'AssignedToUser', 'Name')
         self.Status = IIQ.find_element(data, 'WorkflowStep', 'StepName')
         self.TeamId = IIQ.find_element(data, 'AssignedToTeam', 'TeamId')
         self.TeamName = IIQ.find_element(data, 'AssignedToTeam', 'TeamName')
 
     @staticmethod
     def get_data_request(page):
-        url = "https://" + config.IIQ_INSTANCE + "/api/v1.0/tickets/-/-/All?$o=TicketCreatedDate&$s=" + str(
-            config.PAGE_SIZE) + "&$d=Descending&$p=" + str(page)
-        payload = {}
+        url = "https://" + config.IIQ_INSTANCE + "/api/v1.0/tickets?$p=" + str(page) + "&$s=" + config.PAGE_SIZE + "&$d=Descending&$o=TicketCreatedDate"
+        payload = "{\n    \"OnlyShowDeleted\": false,\n    \"FilterByViewPermission\": true\n}"
         files = {}
         headers = {
             'Client': 'WebBrowser',
