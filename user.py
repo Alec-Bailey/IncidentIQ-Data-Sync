@@ -94,7 +94,7 @@ class User(Base, IIQ):
 
     @staticmethod
     def get_data_request(page):
-        url = "https://" + config.IIQ_INSTANCE + "/services/users?$o=FullName&$s=" + str(
+        url = "https://" + config.IIQ_INSTANCE + "/services/users?$o=UserId&$s=" + str(
             config.PAGE_SIZE) + "&$d=Ascending&$p=" + str(page)
         payload = {}
         files = {}
